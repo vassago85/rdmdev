@@ -51,10 +51,33 @@ echo "Database port is open"
 sleep 3
 
 echo "Testing database credentials..."
+# IMPORTANT: pass credentials to PHP via getenv(), NOT via shell interpolation
+# into the code string. Interpolating ${DB_PASSWORD} directly into a PHP
+# single-quoted string breaks if the password contains a single quote, a
+# backslash, or other characters special to PHP string literals. Any such
+# password produces a silent PHP parse error that looks identical to an auth
+# failure. See: https://owasp.org/www-community/attacks/Code_Injection
 max_tries=10
 count=0
 auth_ok=0
-until php -r "new PDO('mysql:host=db;port=3306;dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}');" 2>/dev/null; do
+# PHP script: reads creds from env, reports the *real* PDO error on the last
+# attempt (so we stop guessing about "password mismatch" vs driver issues).
+_PDO_TEST='
+$host = getenv("DB_HOST") ?: "db";
+$port = getenv("DB_PORT") ?: "3306";
+$db   = getenv("DB_DATABASE");
+$user = getenv("DB_USERNAME");
+$pass = getenv("DB_PASSWORD");
+try {
+    new PDO("mysql:host=$host;port=$port;dbname=$db", $user, $pass,
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    exit(0);
+} catch (Throwable $e) {
+    fwrite(STDERR, $e->getMessage() . "\n");
+    exit(1);
+}
+'
+until php -r "$_PDO_TEST" 2>/tmp/pdo_err; do
     count=$((count + 1))
     if [ $count -ge $max_tries ]; then
         break
@@ -63,16 +86,22 @@ until php -r "new PDO('mysql:host=db;port=3306;dbname=${DB_DATABASE}', '${DB_USE
     sleep 2
 done
 
-if php -r "new PDO('mysql:host=db;port=3306;dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}');" 2>/dev/null; then
+if php -r "$_PDO_TEST" 2>/tmp/pdo_err; then
     auth_ok=1
     echo "Database is ready"
 else
+    last_err=$(cat /tmp/pdo_err 2>/dev/null || echo "(no error captured)")
     echo "ERROR: Database authentication failed after $max_tries attempts."
     echo "       Host: db, Database: ${DB_DATABASE}, User: ${DB_USERNAME}"
-    echo "       Most likely cause: the DB volume was initialised with a different"
-    echo "       password than what's currently in .env. Fix with one of:"
-    echo "         1) Reset volume:  docker compose -f docker-compose.prod.yml down -v && up -d"
-    echo "         2) Update user:   ALTER USER '${DB_USERNAME}'@'%' IDENTIFIED BY '<pass>';"
+    echo "       PDO error: $last_err"
+    echo ""
+    echo "       Likely causes in order of probability:"
+    echo "         1) DB volume initialised with a different password than .env"
+    echo "            Fix: docker compose -f docker-compose.prod.yml down -v && up -d"
+    echo "         2) MYSQL_USER / MYSQL_PASSWORD env vars not passed to db on first"
+    echo "            init (check: docker exec rdmdev-db printenv | grep MYSQL)"
+    echo "         3) User exists with wrong host mask"
+    echo "            Fix: ALTER USER '${DB_USERNAME}'@'%' IDENTIFIED BY '<pass>';"
     exit 1
 fi
 
