@@ -29,8 +29,11 @@ RUN apk add --no-cache \
 ENV TZ=Africa/Johannesburg
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-RUN install-php-extensions \
+RUN apk add --no-cache --virtual .build-deps \
+    $PHPIZE_DEPS \
+    linux-headers \
+ && docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) \
     pdo_mysql \
     mbstring \
     exif \
@@ -39,7 +42,8 @@ RUN install-php-extensions \
     gd \
     zip \
     intl \
-    opcache
+    opcache \
+ && apk del .build-deps
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
