@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Trust NPM / any reverse proxy on the Docker network so Laravel reads
+        // the X-Forwarded-Proto header and generates https:// asset URLs when
+        // the public request is https. Without this, mixed-content breakage.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
