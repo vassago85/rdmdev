@@ -1,0 +1,85 @@
+---
+description: Hard-won gotchas from the rdmdev deployment journey — do NOT re-introduce these
+alwaysApply: true
+---
+
+# Known Gotchas — DO NOT re-introduce
+
+These were all debugged the hard way during initial deployment. Keep them sorted.
+
+## 1. Stick to PHP 8.3 in the container
+
+- `php:8.4-fpm-alpine` combined with `install-php-extensions pdo_mysql` produces
+  a `pdo_mysql` build that fails the auth handshake against MySQL 8 / MariaDB 11
+  with a misleading `1045 Access denied for user ...` error.
+- **NRAPA uses 8.3** on the same server and works fine. Mirror that.
+- If the local dev env (Laragon) has PHP 8.4, still pin `"platform": { "php": "8.3.0" }`
+  in `composer.json` config so `composer update` resolves packages compatible with 8.3.
+- `composer install --no-dev` is OK during the image build because platform is pinned.
+
+## 2. Do NOT bind-mount `.env` into the app container
+
+Tried this to auto-persist `APP_KEY` on first boot. Bind-mounting a single
+file causes two separate problems:
+
+- `sed -i` fails with `Resource busy` (rename across mount is forbidden)
+- File permissions on the host (`0600` owned by `paul:paul`) block container
+  root writes unless chmod'd to `0666`, which then becomes a workaround for a
+  workaround.
+
+**Instead:** generate `APP_KEY` on the host once, set it in `.env`, let
+`env_file:` in compose pass it into the container:
+
+```bash
+cd /opt/rdmdev
+KEY="base64:$(openssl rand -base64 32)"
+sed -i "s|^APP_KEY=.*|APP_KEY=${KEY}|" .env
+```
+
+The entrypoint now fails loudly if `APP_KEY` is empty, with these instructions.
+
+## 3. MySQL volume password is sticky — reset with `down -v` when in doubt
+
+The `MYSQL_PASSWORD` env var is only honored by the MySQL image on **first init**
+(when `/var/lib/mysql` is empty). On subsequent starts it uses whatever is in
+the volume, regardless of env. If you ever see `1045 Access denied` and the
+passwords in `.env` and in `rdmdev-db`'s `printenv` match, the DB volume was
+initialised with a different password earlier. Fix:
+
+```bash
+docker compose -f /opt/rdmdev/docker-compose.prod.yml down -v
+docker compose -f /opt/rdmdev/docker-compose.prod.yml up -d
+```
+
+Only safe if you have no real data in the DB yet.
+
+## 4. Entrypoint sleep on crash
+
+`entrypoint.sh` has `trap '... sleep 5; exit' EXIT INT TERM` before `exec supervisord`.
+This prevents Docker's `restart: unless-stopped` from spinning hundreds of times
+per minute on a fatal error, which corrupts containerd's container state and
+produces zombie containers stuck in "marked for removal". Do not remove this trap.
+
+## 5. PHP 8.4 breaking changes notes
+
+If you ever do upgrade to PHP 8.4 in the container, you also need to:
+- Validate PDO auth against your DB image (MySQL 8 → sha256 plugin issues)
+- Test `install-php-extensions` vs `docker-php-ext-install` — sometimes the
+  helper and native installer produce different `pdo_mysql` binaries
+
+## 6. Docker-compose version
+
+Server uses **docker compose v2** (`docker compose ...`), not the old
+`docker-compose` (hyphen) binary. Install script enforces this in pre-flight.
+
+## 7. The `composer.lock` in git MUST be resolvable against PHP 8.3
+
+If you upgrade dependencies locally on a machine with PHP 8.4, composer may
+pin `symfony/* v8.0.8` or newer which require PHP ≥8.4 — that will break the
+container build silently. Always verify by running (locally or in CI):
+
+```bash
+composer update --dry-run --platform-php=8.3
+```
+
+...before committing a lock file change.

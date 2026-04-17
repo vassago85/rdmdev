@@ -1,0 +1,47 @@
+---
+description: RDM Developments project overview, stack, and deployment
+alwaysApply: true
+---
+
+# RDM Developments (rdmdev)
+
+Corporate website for **RDM Developments (Pty) Ltd** — a building &
+renovation contractor based in Pretoria East, Gauteng.
+
+## Stack
+
+- **Framework:** Laravel 11
+- **Admin:** Filament v3
+- **Frontend:** Blade + Tailwind CSS, Vite 5
+- **DB:** MySQL 8.0 (production) / SQLite possible for local
+- **PHP:** 8.3 in production container (see docker/Dockerfile)
+- **Testing:** PHPUnit (via `phpunit/phpunit: ^10.5`)
+
+## Key files
+
+- `docker/Dockerfile` — production image (php:8.3-fpm-alpine + nginx + supervisor)
+- `docker/entrypoint.sh` — boot script: waits for DB, runs migrations, warms caches
+- `docker/install.sh` — one-shot server installer
+- `docker-compose.prod.yml` — 3 services: app, db, scheduler
+- `DEPLOY.md` — deployment guide
+- `config/rdm.php` — brand/contact values consumed by views
+- `resources/views/partials/footer.blade.php` — footer + legal entity name
+- `resources/views/layouts/app.blade.php` — layout + JSON-LD schema
+- `resources/views/components/rdm-logo.blade.php` — responsive PNG logo
+
+## Brand / legal
+
+- **Display name:** RDM Developments
+- **Legal entity:** RDM Developments (Pty) Ltd (used in footer copyright + JSON-LD `legalName`)
+- **Schema.org type:** `GeneralContractor`
+- **Logo:** `public/images/rdmdev-logo-480.png` / `-960.png` (transparent PNG, use `<x-rdm-logo>`)
+
+## Local dev (Laragon)
+
+```powershell
+cd c:\laragon\www\rdmdev
+php artisan serve             # or rely on Laragon's auto vhost
+npm run dev                   # Vite dev server
+```
+
+`http://rdmdev.test/` if Laragon vhost is configured; otherwise `http://localhost:8000/`.

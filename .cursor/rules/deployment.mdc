@@ -1,0 +1,76 @@
+---
+description: Production deployment for rdmdev.co.za
+alwaysApply: true
+---
+
+# Production Deployment
+
+## Server
+
+- **Host:** Ubuntu (41.72.157.26)
+- **Path:** `/opt/rdmdev`
+- **Domain:** https://rdmdev.co.za
+- **SSH user:** `paul` (non-root; sudo available)
+- **Git remote:** `https://github.com/vassago85/rdmdev.git` (branch: `main`)
+
+## Stack layout on server
+
+Reverse-proxied via a shared **Nginx Proxy Manager** container on the external network `nginx-proxy-manager_default`.
+
+Three services in `docker-compose.prod.yml`:
+
+- `rdmdev-app` — nginx + php-fpm 8.3 + supervisor (single image, `docker/Dockerfile`)
+- `rdmdev-db` — `mysql:8.0`
+- `rdmdev-scheduler` — same image as app, runs `artisan schedule:run` in a loop
+
+Internal bridge network `rdmdev_rdmdev-internal` connects them.
+
+## Full rebuild/update (copy-paste)
+
+```bash
+cd /opt/rdmdev \
+  && git pull origin main \
+  && docker compose -f docker-compose.prod.yml build --no-cache app \
+  && docker compose -f docker-compose.prod.yml up -d --force-recreate app scheduler
+```
+
+`--no-cache` ensures Vite rebuilds CSS/JS inside the Dockerfile.
+Always recreate `app` + `scheduler` together (they share the same baked image).
+
+## First-time install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vassago85/rdmdev/main/docker/install.sh | bash
+```
+
+The script is idempotent and handles: clone/pull, `.env` from template with
+random DB passwords, build, up, healthcheck wait, optional admin-user prompt.
+
+## NPM proxy host config
+
+- Domain: `rdmdev.co.za` (and `www.rdmdev.co.za`)
+- Forward to: `rdmdev-app:80`, scheme `http`
+- Block Common Exploits: on
+- Websockets: on
+- SSL: Let's Encrypt + Force SSL + HTTP/2
+
+## What the entrypoint handles automatically
+
+- Creates `storage/`, `bootstrap/cache/` subdirs
+- Sets `www-data` ownership + 775 permissions
+- Waits for `db:3306`
+- Tests DB credentials with PDO (fails fast on mismatch, with actionable error)
+- Runs `php artisan migrate --force`
+- Seeds on first boot only (checks if `services` table has rows)
+- Clears + warms caches (`config`, `route`, `view`)
+- Creates `storage:link`
+- Hands off to supervisord (runs php-fpm + nginx)
+
+## What you still do manually
+
+- DNS: point `A rdmdev.co.za` + `www.rdmdev.co.za` to `41.72.157.26`
+- Configure the NPM proxy host (see above)
+- Create the first Filament admin user:
+  ```bash
+  docker compose -f /opt/rdmdev/docker-compose.prod.yml exec app php artisan make:filament-user
+  ```
