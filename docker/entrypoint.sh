@@ -67,17 +67,28 @@ sleep 3
 echo "Testing database credentials..."
 max_tries=10
 count=0
+auth_ok=0
 until php -r "new PDO('mysql:host=db;port=3306;dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}');" 2>/dev/null; do
     count=$((count + 1))
     if [ $count -ge $max_tries ]; then
-        echo "Database authentication failed after $max_tries attempts"
-        echo "   Host: db, Database: ${DB_DATABASE}, User: ${DB_USERNAME}"
         break
     fi
     echo "   Auth attempt $count/$max_tries..."
     sleep 2
 done
-echo "Database is ready"
+
+if php -r "new PDO('mysql:host=db;port=3306;dbname=${DB_DATABASE}', '${DB_USERNAME}', '${DB_PASSWORD}');" 2>/dev/null; then
+    auth_ok=1
+    echo "Database is ready"
+else
+    echo "ERROR: Database authentication failed after $max_tries attempts."
+    echo "       Host: db, Database: ${DB_DATABASE}, User: ${DB_USERNAME}"
+    echo "       Most likely cause: the DB volume was initialised with a different"
+    echo "       password than what's currently in .env. Fix with one of:"
+    echo "         1) Reset volume:  docker compose -f docker-compose.prod.yml down -v && up -d"
+    echo "         2) Update user:   ALTER USER '${DB_USERNAME}'@'%' IDENTIFIED BY '<pass>';"
+    exit 1
+fi
 
 echo "Running migrations..."
 php artisan migrate --force || echo "Migration had issues, continuing..."
