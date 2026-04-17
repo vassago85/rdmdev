@@ -16,16 +16,35 @@ chmod -R 775 /var/www/html/storage
 chown -R www-data:www-data /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/bootstrap/cache
 
-# Auto-generate APP_KEY on first boot if empty (idempotent — skipped if already set)
+# Auto-generate APP_KEY on first boot if empty (idempotent — skipped if already set).
+# NOTE: /var/www/html/.env is a *single-file* bind mount from the host, so we can't
+# use `sed -i` (which rename()s over the file and fails with "Resource busy" on
+# bind mounts). Instead we rewrite the file contents in place with `cat >`, which
+# truncates and writes to the same inode and is allowed.
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ]; then
     echo "APP_KEY is empty, generating one..."
     GENERATED_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
     export APP_KEY="$GENERATED_KEY"
-    if [ -f /var/www/html/.env ] && grep -q '^APP_KEY=' /var/www/html/.env; then
-        sed -i "s|^APP_KEY=.*|APP_KEY=${GENERATED_KEY}|" /var/www/html/.env
+
+    if [ -f /var/www/html/.env ] && [ -w /var/www/html/.env ]; then
+        tmp="$(mktemp)"
+        if grep -q '^APP_KEY=' /var/www/html/.env; then
+            awk -v key="APP_KEY=${GENERATED_KEY}" \
+                'BEGIN{done=0} /^APP_KEY=/{print key; done=1; next} {print} END{if(!done) print key}' \
+                /var/www/html/.env > "$tmp"
+        else
+            cat /var/www/html/.env > "$tmp"
+            printf '\nAPP_KEY=%s\n' "${GENERATED_KEY}" >> "$tmp"
+        fi
+        # Overwrite the bind-mounted inode (cannot rename across the mount).
+        cat "$tmp" > /var/www/html/.env
+        rm -f "$tmp"
         echo "APP_KEY written to /var/www/html/.env"
     else
-        echo "WARNING: could not persist APP_KEY to .env (no .env file or missing APP_KEY line). Runtime env var is set, but will regenerate on next container restart. Add APP_KEY=${GENERATED_KEY} to the host .env to make it permanent."
+        echo "WARNING: /var/www/html/.env is missing or not writable."
+        echo "         Runtime APP_KEY is set for this boot only — it WILL regenerate on restart."
+        echo "         Add this line to the host .env to make it permanent:"
+        echo "         APP_KEY=${GENERATED_KEY}"
     fi
 fi
 
