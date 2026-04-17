@@ -30,6 +30,35 @@ Persistent volumes:
 
 ## First-time deployment
 
+### Option A: One-shot installer (recommended)
+
+From a fresh SSH session on the server:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/vassago85/rdmdev/main/docker/install.sh | bash
+```
+
+That single command will:
+- Create `/opt/rdmdev`, clone the repo
+- Generate `.env` with strong random DB passwords
+- Build the Docker image, start the stack
+- Wait for the app to become healthy
+- Prompt you for admin user details
+
+For non-interactive (CI) runs:
+```bash
+ADMIN_NAME="Paul Charsley" ADMIN_EMAIL="paul@charsley.co.za" ADMIN_PASSWORD="..." \
+    bash <(curl -fsSL https://raw.githubusercontent.com/vassago85/rdmdev/main/docker/install.sh)
+```
+
+Flags: `--skip-admin`, `--skip-build`.
+
+After it finishes, complete steps 5 and 6 below (NPM proxy + DNS).
+
+---
+
+### Option B: Manual step-by-step
+
 ### 1. On the server
 
 ```bash
