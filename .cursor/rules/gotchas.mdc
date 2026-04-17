@@ -38,30 +38,47 @@ sed -i "s|^APP_KEY=.*|APP_KEY=${KEY}|" .env
 
 The entrypoint now fails loudly if `APP_KEY` is empty, with these instructions.
 
-## 3. Use MariaDB, NOT MySQL 8 — the auth plugin will bite you
+## 3. NEVER use `db` (or any generic name) as DB_HOST — ALWAYS use the container name
 
-**This is the single biggest time-sink from the initial deploy — do not revisit it.**
+**This is the single biggest time-sink from the initial deploy. The root cause
+was embarrassingly simple and took hours to find.**
 
-`mysql:8.0` defaults every new user to the `caching_sha2_password` plugin. PHP's
-`pdo_mysql` (both native `docker-php-ext-install` and `install-php-extensions`
-builds) has inconsistent handling of that plugin over Docker bridge networks:
-the same user+password will authenticate fine from *inside* the db container
-(Unix socket / shared memory), but **fail with `SQLSTATE[HY000] [1045] Access
-denied`** from the app container over TCP. The passwords are identical
-(MD5 verified), the user has `host='%'`, but PDO still fails.
+This host runs ~10+ Docker stacks, and almost every one of them calls its DB
+service `db` in its compose file. When `rdmdev-app` joins the external
+`nginx-proxy-manager_default` network (required for NPM routing), Docker's
+embedded DNS now sees multiple containers aliased `db` across attached networks.
+It resolves `db` to **whichever it finds first**, and that turned out to be
+`bcsafaris-db` (running mysql:8.0, which has no `rdmdev` user) — producing
+`1045 Access denied for user 'rdmdev'@'172.18.0.10'` forever.
 
-`mariadb:11` defaults to `mysql_native_password`, which works universally with
-every PHP/pdo_mysql build. This is also what `invoice-ninja` on this same host
-uses successfully.
+### Rule
 
-**Rule:** `db` service in both `docker-compose.prod.yml` and
-`docker-compose.local.yml` MUST use `image: mariadb:11` with `MARIADB_*`
-env vars (not `MYSQL_*`), healthcheck `healthcheck.sh --connect --innodb_initialized`.
-Laravel's `DB_CONNECTION=mysql` is fine — MariaDB speaks the MySQL wire protocol.
+In `docker-compose.prod.yml` and `docker-compose.local.yml`, set:
 
-Confirmed Apr 17, 2026: switching MySQL 8 → MariaDB 11 solved the persistent
-1045 error that no amount of password resets, user recreation, or `down -v`
-could fix.
+```yaml
+environment:
+  - DB_HOST=rdmdev-db   # the unique container_name, NOT the service alias
+```
+
+`rdmdev-db` is globally unique across the whole host — no possible collision.
+
+### How to verify this never regresses
+
+```bash
+docker exec rdmdev-app getent hosts rdmdev-db    # must be 10.0.1.x (internal)
+docker exec rdmdev-app getent hosts db           # will often be the WRONG db — never rely on it
+```
+
+### A red herring
+
+During debugging, the DB image was switched from `mysql:8.0` → `mariadb:11`
+because MySQL 8's `caching_sha2_password` plugin was suspected. **It wasn't
+the cause** — we were talking to a different container entirely. Both MySQL 8
+and MariaDB would have worked as `rdmdev-db` once the hostname was fixed.
+
+MariaDB 11 is kept anyway because (a) it's what invoice-ninja uses successfully
+on this host, (b) `mysql_native_password` default means one less thing to
+configure, (c) smaller image, (d) no downside for a site this size.
 
 ## 3b. Volume passwords are sticky — reset with `down -v` when in doubt
 

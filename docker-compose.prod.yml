@@ -25,7 +25,14 @@ services:
       - APP_TIMEZONE=Africa/Johannesburg
       - TZ=Africa/Johannesburg
       - DB_CONNECTION=mysql
-      - DB_HOST=db
+      # CRITICAL: use the unique container name, NOT "db".
+      # This host has ~10 other stacks where the DB service is also called
+      # "db", and all of them (plus this app) share the external
+      # `nginx-proxy-manager_default` network. Docker's embedded DNS resolves
+      # "db" to whichever container it finds first across attached networks,
+      # which was landing on `bcsafaris-db` (mysql:8.0) → 1045 Access denied.
+      # `rdmdev-db` is globally unique so it always resolves to the right DB.
+      - DB_HOST=rdmdev-db
       - DB_PORT=3306
       - DB_DATABASE=${DB_DATABASE:-rdmdev}
       - DB_USERNAME=${DB_USERNAME:-rdmdev}
@@ -86,7 +93,7 @@ services:
       - APP_TIMEZONE=Africa/Johannesburg
       - TZ=Africa/Johannesburg
       - DB_CONNECTION=mysql
-      - DB_HOST=db
+      - DB_HOST=rdmdev-db
       - DB_PORT=3306
       - DB_DATABASE=${DB_DATABASE:-rdmdev}
       - DB_USERNAME=${DB_USERNAME:-rdmdev}
