@@ -16,6 +16,19 @@ chmod -R 775 /var/www/html/storage
 chown -R www-data:www-data /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/bootstrap/cache
 
+# Auto-generate APP_KEY on first boot if empty (idempotent — skipped if already set)
+if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ]; then
+    echo "APP_KEY is empty, generating one..."
+    GENERATED_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
+    export APP_KEY="$GENERATED_KEY"
+    if [ -f /var/www/html/.env ] && grep -q '^APP_KEY=' /var/www/html/.env; then
+        sed -i "s|^APP_KEY=.*|APP_KEY=${GENERATED_KEY}|" /var/www/html/.env
+        echo "APP_KEY written to /var/www/html/.env"
+    else
+        echo "WARNING: could not persist APP_KEY to .env (no .env file or missing APP_KEY line). Runtime env var is set, but will regenerate on next container restart. Add APP_KEY=${GENERATED_KEY} to the host .env to make it permanent."
+    fi
+fi
+
 echo "Waiting for database..."
 max_tries=30
 count=0

@@ -59,27 +59,38 @@ docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-### 4. Generate the app key and restart
+The entrypoint will:
+- Auto-generate `APP_KEY` if empty and persist it to `.env`
+- Wait for the database
+- Run migrations
+- Seed the database on first boot only
+- Warm config/route/view caches
+- Create the `storage:link` symlink
 
-```bash
-docker compose -f docker-compose.prod.yml exec app php artisan key:generate --force
-docker compose -f docker-compose.prod.yml restart app scheduler
-```
+So after `up -d` the public site is already live.
 
-### 5. Create a Filament admin user
+### 4. Create a Filament admin user (interactive — run once)
 
 ```bash
 docker compose -f docker-compose.prod.yml exec app php artisan make:filament-user
 ```
 
-### 6. Configure Nginx Proxy Manager
+You'll be prompted for Name / Email / Password. Log in at `https://rdmdev.co.za/admin`.
+
+Non-interactive alternative:
+```bash
+docker compose -f docker-compose.prod.yml exec app php artisan make:filament-user \
+  --name="Your Name" --email="you@example.com" --password="ChangeMeAfterwards"
+```
+
+### 5. Configure Nginx Proxy Manager
 - Domain: `rdmdev.co.za` (and `www.rdmdev.co.za`)
 - Forward hostname: `rdmdev-app`
 - Forward port: `80`
 - Enable Block Common Exploits
 - SSL: request Let's Encrypt, enable "Force SSL" and HTTP/2
 
-### 7. Point DNS
+### 6. Point DNS
 - `A` record `rdmdev.co.za` → `41.72.157.26`
 - `A` record `www.rdmdev.co.za` → `41.72.157.26`
 
