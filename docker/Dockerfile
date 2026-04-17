@@ -1,8 +1,11 @@
 # RDM Developments - Production Dockerfile
 # Single-stage build using the install-php-extensions helper (same pattern as NRAPA)
-# Produces: nginx + php-fpm 8.3 + supervisor in one image, started via entrypoint.
+# Produces: nginx + php-fpm 8.4 + supervisor in one image, started via entrypoint.
+#
+# Note: PHP 8.4 is required because composer.lock pins symfony/* v8.0.8 and
+# nesbot/carbon 3.11.4, which declare php >=8.4.
 
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 RUN apk add --no-cache \
     nginx \
