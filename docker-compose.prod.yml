@@ -59,7 +59,6 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:?Database password required}
     volumes:
       - rdmdev-db:/var/lib/mysql
-      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/custom.cnf:ro
     networks:
       - rdmdev-internal
     healthcheck:
@@ -67,7 +66,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
 
   scheduler:
     image: rdmdev-app:latest

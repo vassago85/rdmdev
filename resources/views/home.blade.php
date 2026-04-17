@@ -137,7 +137,16 @@
 
         <div class="relative">
             <div class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 shadow-card p-8 text-white flex flex-col justify-between">
-                <x-rdm-logo variant="light" class="h-14 w-auto" />
+                {{-- Intentionally stretched vertically: same width as `h-14 w-auto` (~134px)
+                     but double the height. Uses a direct <img> to bypass the component's
+                     aspect-locked width/height HTML attrs. --}}
+                <img
+                    src="{{ asset('images/rdmdev-logo-480.png') }}"
+                    srcset="{{ asset('images/rdmdev-logo-480.png') }} 1x, {{ asset('images/rdmdev-logo-960.png') }} 2x"
+                    alt="RDM Developments — Building &amp; Renovation"
+                    class="block"
+                    style="width: 134px; height: 112px; filter: brightness(0) invert(1);"
+                />
                 <div>
                     <p class="text-5xl sm:text-6xl font-display font-bold tracking-tight">Pretoria East</p>
                     <p class="mt-2 text-brand-100">Garsfontein · Faerie Glen · Moreleta Park · Woodhill · Silver Lakes · Olympus</p>

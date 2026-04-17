@@ -155,21 +155,41 @@ step "Building image from scratch (--no-cache)"
 docker compose -f "$COMPOSE_FILE" build --no-cache app
 success "Image built"
 
-#---------- Up ----------
-step "Starting stack"
-docker compose -f "$COMPOSE_FILE" up -d
-success "Containers started"
+#---------- Start DB first (so we can wait properly for MySQL first-init) ----------
+step "Starting rdmdev-db"
+docker compose -f "$COMPOSE_FILE" up -d db
+success "DB container started"
 
 #---------- Wait for DB ----------
-step "Waiting for rdmdev-db to be healthy"
-max_wait=120; elapsed=0
+step "Waiting for rdmdev-db to be healthy (MySQL first-init can take a while)"
+max_wait=240; elapsed=0
 while [ $elapsed -lt $max_wait ]; do
     status=$(docker inspect --format='{{.State.Health.Status}}' rdmdev-db 2>/dev/null || echo "missing")
     [ "$status" = "healthy" ] && { success "DB healthy"; break; }
     sleep 3; elapsed=$((elapsed+3)); printf "."
 done
 echo ""
-[ "$status" = "healthy" ] || { err "DB never became healthy. Logs:"; docker logs rdmdev-db --tail 50; exit 1; }
+if [ "$status" != "healthy" ]; then
+    err "DB never became healthy in ${max_wait}s. Diagnostics:"
+    echo ""
+    echo "--- docker ps (rdmdev-db) ---"
+    docker ps -a --filter name=rdmdev-db
+    echo ""
+    echo "--- docker logs rdmdev-db --tail 60 ---"
+    docker logs rdmdev-db --tail 60
+    echo ""
+    echo "--- disk space ---"
+    df -h /var/lib/docker 2>/dev/null || df -h /
+    echo ""
+    echo "--- memory ---"
+    free -h 2>/dev/null || true
+    exit 1
+fi
+
+#---------- Now start app + scheduler (db is confirmed healthy) ----------
+step "Starting rdmdev-app and rdmdev-scheduler"
+docker compose -f "$COMPOSE_FILE" up -d app scheduler
+success "App + scheduler started"
 
 #---------- Verify PDO connection ----------
 step "Verifying PDO handshake from app → db"
