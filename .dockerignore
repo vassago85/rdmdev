@@ -1,0 +1,55 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies (installed during build)
+node_modules
+vendor
+
+# IDE/Editor
+.idea
+.vscode
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Cache
+storage/framework/cache/*
+!storage/framework/cache/.gitkeep
+storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+storage/framework/views/*
+!storage/framework/views/.gitkeep
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# Tests
+tests
+phpunit.xml
+.phpunit.result.cache
+.phpunit.cache
+
+# Local build artifacts (rebuilt in Docker)
+public/build
+public/hot
+public/storage
+
+# Docs
+*.md
+!README.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Local database
+database/*.sqlite
