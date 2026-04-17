@@ -7,18 +7,23 @@
         <div>
             <p class="eyebrow !text-brand-100">Let's talk</p>
             <h2 class="!text-white mt-2">{{ $heading }}</h2>
-            <p class="mt-4 text-brand-50/90 max-w-xl text-lg">{{ $subtext }}</p>
+            <p class="mt-4 text-brand-50/90 max-w-xl text-lg leading-relaxed">{{ $subtext }}</p>
         </div>
         <div class="flex flex-wrap gap-3 lg:justify-end">
             <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-lg bg-white text-brand-700 hover:bg-brand-50">
+                <x-lucide name="phone" class="h-5 w-5" />
                 Call {{ config('rdm.phone') }}
             </a>
             <a href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode(config('rdm.whatsapp_greeting')) }}"
                target="_blank" rel="noopener"
                class="btn-whatsapp">
+                <x-lucide name="message-circle" class="h-5 w-5" />
                 WhatsApp
             </a>
-            <a href="{{ route('contact') }}#enquiry" class="btn-outline">Request a quote</a>
+            <a href="{{ route('contact') }}#enquiry" class="btn-outline">
+                <x-lucide name="file-text" class="h-5 w-5" />
+                Request a quote
+            </a>
         </div>
     </div>
 </section>

@@ -14,7 +14,7 @@
     <h3 class="!text-2xl mb-2">Request a quote</h3>
     <p class="text-ink-500 mb-6">
         Fill in the form below and {{ config('rdm.owner') }} will be in touch shortly.
-        Prefer to call?
+        Prefer to speak directly?
         <a class="link-underline" href="tel:{{ config('rdm.phone_tel') }}">{{ config('rdm.phone') }}</a>.
     </p>
 
@@ -68,8 +68,11 @@
             @error('message') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
         </div>
 
-        <div class="{{ $compact ? '' : 'sm:col-span-2' }} flex flex-col sm:flex-row sm:items-center gap-3">
-            <button type="submit" class="btn-primary">Send enquiry</button>
+        <div class="{{ $compact ? '' : 'sm:col-span-2' }} flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
+            <button type="submit" class="btn-primary">
+                <x-lucide name="arrow-right" class="h-5 w-5" />
+                Request My Quote
+            </button>
             <p class="text-xs text-ink-400">We'll only use your details to respond to this enquiry.</p>
         </div>
     </form>

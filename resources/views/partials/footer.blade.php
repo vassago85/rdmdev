@@ -7,10 +7,16 @@
                 Every project is personally supervised by {{ config('rdm.owner') }}.
             </p>
             <div class="mt-5 flex flex-wrap gap-3">
-                <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-md bg-white/10 text-white hover:bg-white/20">Call {{ config('rdm.phone') }}</a>
+                <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-md bg-white/10 text-white hover:bg-white/20">
+                    <x-lucide name="phone" class="h-4 w-4" />
+                    Call {{ config('rdm.phone') }}
+                </a>
                 <a href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode(config('rdm.whatsapp_greeting')) }}"
                    target="_blank" rel="noopener"
-                   class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957]">WhatsApp</a>
+                   class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957]">
+                    <x-lucide name="message-circle" class="h-4 w-4" />
+                    WhatsApp
+                </a>
             </div>
         </div>
 
@@ -29,8 +35,8 @@
                 <li><a class="hover:text-white" href="{{ route('projects.index') }}">Projects</a></li>
                 <li><a class="hover:text-white" href="{{ route('about') }}">About</a></li>
                 <li><a class="hover:text-white" href="{{ route('contact') }}">Contact</a></li>
-                <li><a class="hover:text-white" href="mailto:{{ config('rdm.email') }}">{{ config('rdm.email') }}</a></li>
-                <li class="text-ink-300">{{ config('rdm.location') }}</li>
+                <li class="flex items-center gap-2"><x-lucide name="mail" class="h-4 w-4 text-brand-300" /> <a class="hover:text-white" href="mailto:{{ config('rdm.email') }}">{{ config('rdm.email') }}</a></li>
+                <li class="flex items-center gap-2 text-ink-300"><x-lucide name="map-pin" class="h-4 w-4 text-brand-300" /> {{ config('rdm.location') }}</li>
             </ul>
         </div>
     </div>
