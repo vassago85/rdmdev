@@ -16,7 +16,7 @@
         '@type'    => 'GeneralContractor',
         'name'     => config('rdm.name'),
         'legalName'=> 'RDM Developments (Pty) Ltd',
-        'image'    => asset('images/rdm-logo.svg'),
+        'image'    => asset('images/rdmdev-logo-960.png'),
         'url'      => url('/'),
         'telephone'=> config('rdm.phone_tel'),
         'email'    => config('rdm.email'),

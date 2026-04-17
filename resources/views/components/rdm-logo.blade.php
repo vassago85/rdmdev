@@ -1,26 +1,19 @@
 @props(['variant' => 'dark'])
 
 @php
-    $wordColor = $variant === 'light' ? '#FFFFFF' : '#2F5D62';
-    $subColor  = $variant === 'light' ? '#FFFFFF' : '#3A3F45';
-    $roofColor = $variant === 'light' ? '#FFFFFF' : '#2F5D62';
+    // variant="light" renders the logo as pure white (for dark backgrounds)
+    // via CSS filter: brightness(0) invert(1).
+    $styleAttr = $variant === 'light'
+        ? 'filter: brightness(0) invert(1);'
+        : '';
 @endphp
 
-<svg {{ $attributes->merge(['class' => 'h-12 w-auto', 'role' => 'img', 'aria-label' => 'RDM Developments']) }}
-     viewBox="0 0 260 80" xmlns="http://www.w3.org/2000/svg">
-    {{-- Roof line --}}
-    <path d="M10 34 L100 10 L190 34" fill="none" stroke="{{ $roofColor }}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-    {{-- Little chimney accent --}}
-    <line x1="148" y1="22" x2="148" y2="34" stroke="{{ $roofColor }}" stroke-width="4" stroke-linecap="round"/>
-    {{-- Wordmark --}}
-    <text x="10" y="62"
-          font-family="Barlow Condensed, Inter, sans-serif"
-          font-size="34" font-weight="700"
-          fill="{{ $wordColor }}"
-          letter-spacing="2">RDMDEV</text>
-    <text x="134" y="62"
-          font-family="Inter, sans-serif"
-          font-size="14" font-weight="500"
-          fill="{{ $subColor }}"
-          letter-spacing="3">DEVELOPMENTS</text>
-</svg>
+<img
+    src="{{ asset('images/rdmdev-logo-480.png') }}"
+    srcset="{{ asset('images/rdmdev-logo-480.png') }} 1x, {{ asset('images/rdmdev-logo-960.png') }} 2x"
+    alt="RDM Developments — Building &amp; Renovation"
+    width="480"
+    height="201"
+    style="{{ $styleAttr }}"
+    {{ $attributes->merge(['class' => 'h-12 w-auto']) }}
+/>

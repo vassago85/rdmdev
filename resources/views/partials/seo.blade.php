@@ -2,7 +2,7 @@
     $title       = $pageTitle      ?? (config('rdm.name') . ' — ' . config('rdm.tagline'));
     $description = $metaDescription ?? 'Owner-managed builder and renovation specialist in Pretoria East. Personally supervised by Ruben Metcalfe.';
     $canonical   = url()->current();
-    $ogImage     = $ogImage ?? asset('images/rdm-og.svg');
+    $ogImage     = $ogImage ?? asset('images/rdmdev-logo-960.png');
 @endphp
 <title>{{ $title }}</title>
 <meta name="description" content="{{ $description }}">
