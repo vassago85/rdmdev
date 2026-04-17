@@ -15,6 +15,7 @@
         '@context' => 'https://schema.org',
         '@type'    => 'GeneralContractor',
         'name'     => config('rdm.name'),
+        'legalName'=> 'RDM Developments (Pty) Ltd',
         'image'    => asset('images/rdm-logo.svg'),
         'url'      => url('/'),
         'telephone'=> config('rdm.phone_tel'),

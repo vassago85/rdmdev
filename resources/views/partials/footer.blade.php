@@ -36,7 +36,7 @@
     </div>
     <div class="border-t border-white/10">
         <div class="container py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-ink-300">
-            <p>&copy; {{ date('Y') }} {{ config('rdm.name') }}. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} RDM Developments (Pty) Ltd. All rights reserved.</p>
             <p>Pretoria East · Gauteng · South Africa</p>
         </div>
     </div>
