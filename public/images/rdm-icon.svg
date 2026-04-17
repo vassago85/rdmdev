@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#2F5D62"/>
+  <path d="M10 38 L32 18 L54 38" fill="none" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="32" y="54" text-anchor="middle" font-family="Barlow Condensed, Inter, sans-serif" font-size="14" font-weight="700" fill="#FFFFFF" letter-spacing="2">RDMDEV</text>
+</svg>
