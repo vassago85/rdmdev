@@ -1,11 +1,10 @@
 # RDM Developments - Production Dockerfile
-# Single-stage build using the install-php-extensions helper (same pattern as NRAPA)
-# Produces: nginx + php-fpm 8.4 + supervisor in one image, started via entrypoint.
-#
-# Note: PHP 8.4 is required because composer.lock pins symfony/* v8.0.8 and
-# nesbot/carbon 3.11.4, which declare php >=8.4.
+# Mirrors the proven NRAPA pattern: PHP 8.3 + install-php-extensions + nginx + supervisor.
+# PHP 8.4 was causing PDO auth handshake failures against MySQL 8 / MariaDB 11
+# (install-php-extensions builds pdo_mysql against a libmysqlclient variant
+# that breaks the handshake on 8.4; 8.3 uses mysqlnd cleanly).
 
-FROM php:8.4-fpm-alpine
+FROM php:8.3-fpm-alpine
 
 RUN apk add --no-cache \
     nginx \
@@ -29,11 +28,8 @@ RUN apk add --no-cache \
 ENV TZ=Africa/Johannesburg
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
-    linux-headers \
- && docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install -j$(nproc) \
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+RUN install-php-extensions \
     pdo_mysql \
     mbstring \
     exif \
@@ -42,8 +38,7 @@ RUN apk add --no-cache --virtual .build-deps \
     gd \
     zip \
     intl \
-    opcache \
- && apk del .build-deps
+    opcache
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -51,7 +46,7 @@ WORKDIR /var/www/html
 
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer update --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-stable
 
 RUN npm ci && npm run build && rm -rf node_modules
 
