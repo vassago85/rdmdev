@@ -1,10 +1,16 @@
 # Local testing override — mirrors production but:
-#  - Publishes port 8080 to host
+#  - Publishes on port 8086 (avoids mctactical-pos-web / bcsafaris on 8080,
+#    and sits next to nrapa on 8085 in the local portmap)
 #  - Does not reference the NPM external network
 #  - No scheduler (keeps iteration fast)
 #
 # Usage:
 #   docker compose -f docker-compose.local.yml up --build app
+#
+# Then visit: http://localhost:8086
+# NOTE: if you previously visited http://localhost:8080 while mctactical-pos
+# was running, that SPA may have registered a service worker. Use an incognito
+# window or clear site data for localhost before testing.
 
 services:
   app:
@@ -28,7 +34,7 @@ services:
       - DB_USERNAME=${DB_USERNAME:-rdmdev}
       - DB_PASSWORD=${DB_PASSWORD:?Database password required}
     ports:
-      - "8080:80"
+      - "8086:80"
     depends_on:
       db:
         condition: service_healthy

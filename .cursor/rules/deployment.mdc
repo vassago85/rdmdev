@@ -71,12 +71,13 @@ Reproduce the whole prod stack on your dev machine with:
 
 ```bash
 docker compose -f docker-compose.local.yml up -d --build
-# → http://localhost:8080
+# → http://localhost:8086
 ```
 
 `docker-compose.local.yml` uses the same Dockerfile and `mysql:8.0` image
-as prod. Only differences: port published on 8080, no NPM network, no
-scheduler. Use this whenever in doubt about a deploy change.
+as prod. Only differences: port published on 8086 (reserved for rdmdev in
+the local portmap, between nrapa=8085 and proselver-dev=8090), no NPM
+network, no scheduler. Use this whenever in doubt about a deploy change.
 
 ## NPM proxy host config
 
