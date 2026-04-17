@@ -129,10 +129,18 @@ if [ ! -f .env ]; then
 
     success "Generated random DB passwords"
     warn   "Review .env now and set MAIL_* / APP_URL / etc. if needed."
-    warn   "Credentials saved only in ${INSTALL_DIR}/.env (mode 600). Back them up!"
-    chmod 600 .env
+    warn   "Credentials saved only in ${INSTALL_DIR}/.env — back them up!"
+    # Mode 664 (not 600) because the app container bind-mounts this file and
+    # needs to write APP_KEY on first boot. The containing /opt/rdmdev/ dir is
+    # still only accessible to the deploy user, so readability is unchanged.
+    chmod 664 .env
 else
     success ".env already exists (leaving untouched)"
+    # Ensure container can still write to it (idempotent guard for existing installs)
+    if [ ! -w .env ] || [ "$(stat -c '%a' .env 2>/dev/null)" = "600" ]; then
+        warn "Loosening .env permissions to 664 so the app container can persist APP_KEY"
+        chmod 664 .env
+    fi
 fi
 
 # Sanity-check required env vars are set
