@@ -50,6 +50,13 @@ RUN composer update --no-dev --optimize-autoloader --no-interaction --no-scripts
 
 RUN npm ci && npm run build && rm -rf node_modules
 
+# Publish Filament's JS/CSS into public/ so the admin panel renders with its
+# full styling. Without this, the login page loads but /js/filament/* and
+# /css/filament/* return 404 and the admin UI is unstyled. Scripts-disabled
+# composer install means these are NOT auto-published by the vendor:publish
+# post-install hook, so we invoke it explicitly.
+RUN php artisan filament:assets
+
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache
