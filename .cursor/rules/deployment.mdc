@@ -20,7 +20,7 @@ Reverse-proxied via a shared **Nginx Proxy Manager** container on the external n
 Three services in `docker-compose.prod.yml`:
 
 - `rdmdev-app` — nginx + php-fpm 8.3 + supervisor (single image, `docker/Dockerfile`)
-- `rdmdev-db` — `mysql:8.0`
+- `rdmdev-db` — `mariadb:11` (see gotcha #3 — do NOT change to MySQL 8)
 - `rdmdev-scheduler` — same image as app, runs `artisan schedule:run` in a loop
 
 Internal bridge network `rdmdev_rdmdev-internal` connects them.
@@ -74,7 +74,7 @@ docker compose -f docker-compose.local.yml up -d --build
 # → http://localhost:8086
 ```
 
-`docker-compose.local.yml` uses the same Dockerfile and `mysql:8.0` image
+`docker-compose.local.yml` uses the same Dockerfile and `mariadb:11` image
 as prod. Only differences: port published on 8086 (reserved for rdmdev in
 the local portmap, between nrapa=8085 and proselver-dev=8090), no NPM
 network, no scheduler. Use this whenever in doubt about a deploy change.

@@ -42,20 +42,20 @@ services:
       - rdmdev-local
 
   db:
-    image: mysql:8.0
+    image: mariadb:11
     container_name: rdmdev-db-local
     restart: "no"
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Root password required}
-      MYSQL_DATABASE: ${DB_DATABASE:-rdmdev}
-      MYSQL_USER: ${DB_USERNAME:-rdmdev}
-      MYSQL_PASSWORD: ${DB_PASSWORD:?Database password required}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Root password required}
+      MARIADB_DATABASE: ${DB_DATABASE:-rdmdev}
+      MARIADB_USER: ${DB_USERNAME:-rdmdev}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Database password required}
     volumes:
       - rdmdev-db-local:/var/lib/mysql
     networks:
       - rdmdev-local
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 5

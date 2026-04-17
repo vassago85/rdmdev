@@ -49,20 +49,26 @@ services:
       - "com.centurylinklabs.watchtower.enable=false"
 
   db:
-    image: mysql:8.0
+    # Using MariaDB instead of MySQL 8.0 because mysql:8.0's default
+    # caching_sha2_password plugin has a known handshake issue with PHP's
+    # pdo_mysql driver on Alpine over bridge networks (works fine from
+    # localhost inside the container, fails cross-container). MariaDB uses
+    # the simpler mysql_native_password plugin by default — no drama.
+    # This is also what invoice-ninja on this host uses successfully.
+    image: mariadb:11
     container_name: rdmdev-db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Root password required}
-      MYSQL_DATABASE: ${DB_DATABASE:-rdmdev}
-      MYSQL_USER: ${DB_USERNAME:-rdmdev}
-      MYSQL_PASSWORD: ${DB_PASSWORD:?Database password required}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Root password required}
+      MARIADB_DATABASE: ${DB_DATABASE:-rdmdev}
+      MARIADB_USER: ${DB_USERNAME:-rdmdev}
+      MARIADB_PASSWORD: ${DB_PASSWORD:?Database password required}
     volumes:
       - rdmdev-db:/var/lib/mysql
     networks:
       - rdmdev-internal
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
       interval: 10s
       timeout: 5s
       retries: 5
