@@ -1,6 +1,11 @@
 #!/bin/sh
 set -e
 
+# Safety: if we crash before supervisord, wait 5s before exiting so Docker's
+# `restart: unless-stopped` loop doesn't spin hundreds of times per minute
+# (which corrupts containerd state and produces "marked for removal" zombies).
+trap 'rc=$?; echo "Entrypoint exited with code $rc — sleeping 5s before Docker restarts us"; sleep 5; exit $rc' EXIT INT TERM
+
 echo "Starting RDM Developments..."
 
 mkdir -p /var/www/html/storage/framework/cache
