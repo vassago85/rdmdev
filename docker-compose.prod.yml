@@ -33,8 +33,6 @@ services:
     volumes:
       - rdmdev-storage:/var/www/html/storage/app
       - rdmdev-logs:/var/www/html/storage/logs
-      # Bind-mount host .env so entrypoint can persist APP_KEY on first boot
-      - ./.env:/var/www/html/.env
     depends_on:
       db:
         condition: service_healthy

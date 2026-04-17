@@ -21,36 +21,17 @@ chmod -R 775 /var/www/html/storage
 chown -R www-data:www-data /var/www/html/bootstrap/cache
 chmod -R 775 /var/www/html/bootstrap/cache
 
-# Auto-generate APP_KEY on first boot if empty (idempotent — skipped if already set).
-# NOTE: /var/www/html/.env is a *single-file* bind mount from the host, so we can't
-# use `sed -i` (which rename()s over the file and fails with "Resource busy" on
-# bind mounts). Instead we rewrite the file contents in place with `cat >`, which
-# truncates and writes to the same inode and is allowed.
+# APP_KEY must be set by the host .env (via env_file in compose).
+# We no longer try to persist it inside the container because bind-mounting
+# a single file causes permission / inode rename issues on some hosts.
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ]; then
-    echo "APP_KEY is empty, generating one..."
-    GENERATED_KEY="base64:$(php -r 'echo base64_encode(random_bytes(32));')"
-    export APP_KEY="$GENERATED_KEY"
-
-    if [ -f /var/www/html/.env ] && [ -w /var/www/html/.env ]; then
-        tmp="$(mktemp)"
-        if grep -q '^APP_KEY=' /var/www/html/.env; then
-            awk -v key="APP_KEY=${GENERATED_KEY}" \
-                'BEGIN{done=0} /^APP_KEY=/{print key; done=1; next} {print} END{if(!done) print key}' \
-                /var/www/html/.env > "$tmp"
-        else
-            cat /var/www/html/.env > "$tmp"
-            printf '\nAPP_KEY=%s\n' "${GENERATED_KEY}" >> "$tmp"
-        fi
-        # Overwrite the bind-mounted inode (cannot rename across the mount).
-        cat "$tmp" > /var/www/html/.env
-        rm -f "$tmp"
-        echo "APP_KEY written to /var/www/html/.env"
-    else
-        echo "WARNING: /var/www/html/.env is missing or not writable."
-        echo "         Runtime APP_KEY is set for this boot only — it WILL regenerate on restart."
-        echo "         Add this line to the host .env to make it permanent:"
-        echo "         APP_KEY=${GENERATED_KEY}"
-    fi
+    echo "ERROR: APP_KEY is empty." >&2
+    echo "       Generate one on the host and add it to /opt/rdmdev/.env:" >&2
+    echo "         cd /opt/rdmdev" >&2
+    echo "         KEY=\"base64:\$(openssl rand -base64 32)\"" >&2
+    echo "         sed -i \"s|^APP_KEY=.*|APP_KEY=\${KEY}|\" .env" >&2
+    echo "       Then restart: docker compose -f docker-compose.prod.yml up -d" >&2
+    exit 1
 fi
 
 echo "Waiting for database..."
