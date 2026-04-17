@@ -122,7 +122,46 @@ against `docker-compose.local.yml` on Windows Docker Desktop. The code
 and Docker configuration are correct — any future prod auth failures are
 environmental (stale `.env`, sticky DB volume). Use `docker/redeploy.sh`.
 
-## 8. The `composer.lock` in git MUST be resolvable against PHP 8.3
+## 8. Nginx static-asset location MUST fall through to PHP, not `=404`
+
+The `location ~* \.(...|css|js|...)$` block in `docker/nginx.conf` must end
+with `try_files $uri /index.php?$query_string;` — **never `=404`**.
+
+Livewire 3 and Filament serve a handful of `.js` URLs dynamically through
+Laravel routes (e.g. `/livewire/livewire.min.js`, `/livewire/update`,
+Filament's asset streamers). They end in `.js` so the nginx regex matches,
+but there is no physical file on disk. With `try_files $uri =404;` nginx
+returns a 404 and the entire Filament admin panel (and any Livewire page)
+breaks with no visible components.
+
+Falling through to `/index.php?$query_string` lets Laravel handle the miss.
+The `expires 1y` / `Cache-Control immutable` headers only apply when the
+file is actually served from disk, so this doesn't cache dynamic responses
+aggressively.
+
+## 9. Publishing Filament assets during image build
+
+`Dockerfile` runs `composer install --no-scripts`, which skips Filament's
+`vendor:publish` post-install hook. You must explicitly run
+`php artisan filament:assets` during the build so the `/js/filament/*` and
+`/css/filament/*` asset URLs have files to serve. Without this the admin
+panel loads but is unstyled and non-interactive.
+
+```dockerfile
+RUN php artisan filament:assets
+```
+
+Keep this after `npm run build` and before the final image-finalize step.
+
+## 10. The `User` model MUST implement `FilamentUser` in Filament 3
+
+In production (`APP_ENV=production`), Filament 3 refuses to let a user
+authenticate unless the `User` model implements `Filament\Models\Contracts\FilamentUser`
+and `canAccessPanel()` returns `true`. Without this, you'll get kicked back
+to `/admin/login` with no error. For this owner-run site we return `true`
+for all users — there's no guest signup, auth itself is the gate.
+
+## 11. The `composer.lock` in git MUST be resolvable against PHP 8.3
 
 If you upgrade dependencies locally on a machine with PHP 8.4, composer may
 pin `symfony/* v8.0.8` or newer which require PHP ≥8.4 — that will break the
