@@ -20,7 +20,7 @@
         </div>
         <div>
             <div class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-8 text-white flex flex-col justify-between">
-                <x-rdm-logo variant="light" class="h-14 w-auto" />
+                <x-rdm-logo variant="light" class="h-14 w-auto self-start" />
                 <div>
                     <p class="text-3xl sm:text-4xl font-display font-bold">{{ config('rdm.owner') }}</p>
                     <p class="mt-2 text-brand-100">Owner &amp; Project Supervisor</p>
