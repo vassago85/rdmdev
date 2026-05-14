@@ -12,18 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Livewire 3 registers POST /livewire/upload-file with ONLY a throttle
-        // middleware by default — no session, no auth. Behind a reverse proxy
-        // (NPM) and inside Filament's panel context, that route then aborts
-        // 401 ("Unauthenticated") because no auth context was loaded for the
-        // request, even though the user has a valid session cookie. Forcing
-        // the upload route through the standard `web` group (loads session +
-        // cookies + CSRF) and `auth:web` (requires logged-in user) makes the
-        // upload share the same auth context as /livewire/update, which fixes
-        // image uploads in the Filament admin (FileUpload, ImageColumn, etc).
-        config([
-            'livewire.temporary_file_upload.middleware' => ['web', 'auth:web'],
-        ]);
+        //
     }
 
     /**
