@@ -104,8 +104,33 @@
     </div>
 </section>
 
-{{-- SERVICES --}}
+{{-- FEATURED PROJECTS --}}
+@if ($featuredProjects->count())
 <section class="section">
+    <div class="container">
+        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div class="max-w-xl">
+                <p class="eyebrow">Recent work</p>
+                <h2 class="mt-2">Featured projects</h2>
+                <p class="mt-4 text-ink-500 leading-relaxed">A selection of the renovations and builds we've completed across Pretoria East.</p>
+            </div>
+            <a href="{{ route('projects.index') }}" class="btn-ghost !text-base inline-flex items-center gap-1.5">
+                View all projects
+                <x-lucide name="arrow-right" class="h-4 w-4" />
+            </a>
+        </div>
+
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            @foreach ($featuredProjects as $project)
+                @include('partials.project-card', ['project' => $project])
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- SERVICES --}}
+<section class="section bg-ink-50/60 border-y border-ink-100">
     <div class="container">
         <div class="max-w-2xl">
             <p class="eyebrow">What we do</p>
@@ -139,7 +164,7 @@
 </section>
 
 {{-- WHY CHOOSE RDM --}}
-<section class="section bg-ink-50/60 border-y border-ink-100">
+<section class="section">
     <div class="container">
         <div class="max-w-2xl">
             <p class="eyebrow">Why RDM</p>
@@ -171,31 +196,6 @@
         </div>
     </div>
 </section>
-
-{{-- FEATURED PROJECTS --}}
-@if ($featuredProjects->count())
-<section class="section">
-    <div class="container">
-        <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div class="max-w-xl">
-                <p class="eyebrow">Recent work</p>
-                <h2 class="mt-2">Featured projects</h2>
-                <p class="mt-4 text-ink-500 leading-relaxed">A selection of the renovations and builds we've completed across Pretoria East.</p>
-            </div>
-            <a href="{{ route('projects.index') }}" class="btn-ghost !text-base inline-flex items-center gap-1.5">
-                View all projects
-                <x-lucide name="arrow-right" class="h-4 w-4" />
-            </a>
-        </div>
-
-        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach ($featuredProjects as $project)
-                @include('partials.project-card', ['project' => $project])
-            @endforeach
-        </div>
-    </div>
-</section>
-@endif
 
 {{-- AREAS WE SERVE --}}
 <section class="section bg-ink-50/60 border-y border-ink-100">
