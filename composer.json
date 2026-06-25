@@ -67,6 +67,10 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "audit": {
+            "_comment": "Composer 2.9 added block-insecure (default true) which refuses to resolve any package with a published security advisory. That's too strict for this stack: Laravel 11.x and Filament 3.3.0 both carry advisories we plan to address via a deliberate framework upgrade (not by being forced into it on every deploy). Setting false reverts to 2.8-era behaviour: advisories still reported, just don't block resolution. Track the related upgrade work separately.",
+            "block-insecure": false
         }
     },
     "minimum-stability": "stable",
