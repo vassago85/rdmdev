@@ -29,14 +29,15 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Read SMTP credentials from the `app_settings` table and override the
-     * mail config in memory for this request. This lets the owner edit creds
-     * through the Filament admin without redeploying or restarting containers.
+     * Read Mailgun credentials from the `app_settings` table and override the
+     * mail/services config in memory for this request. This lets the owner
+     * edit creds through the Filament admin without redeploying or restarting
+     * containers.
      *
      * Wrapped defensively: if the table is missing (first migration), the DB
      * is unreachable, or no row has been saved yet, we silently fall back to
-     * whatever is in .env / config/mail.php so the admin never gets locked out
-     * by a misconfiguration here.
+     * whatever is in .env / config/* so the admin never gets locked out by a
+     * misconfiguration here.
      */
     protected function applyMailSettings(): void
     {
@@ -55,21 +56,15 @@ class AppServiceProvider extends ServiceProvider
                 Config::set('mail.default', $settings->mailer);
             }
 
-            if ($settings->mail_host) {
-                Config::set('mail.mailers.smtp.host', $settings->mail_host);
+            if ($settings->mailgun_domain) {
+                Config::set('services.mailgun.domain', $settings->mailgun_domain);
             }
-            if ($settings->mail_port) {
-                Config::set('mail.mailers.smtp.port', $settings->mail_port);
+            if ($settings->mailgun_secret) {
+                Config::set('services.mailgun.secret', $settings->mailgun_secret);
             }
-            if ($settings->mail_username) {
-                Config::set('mail.mailers.smtp.username', $settings->mail_username);
+            if ($settings->mailgun_endpoint) {
+                Config::set('services.mailgun.endpoint', $settings->mailgun_endpoint);
             }
-            if ($settings->mail_password) {
-                Config::set('mail.mailers.smtp.password', $settings->mail_password);
-            }
-
-            // 'tls' / 'ssl' / '' (the SMTP transport treats empty/null as no encryption).
-            Config::set('mail.mailers.smtp.encryption', $settings->mail_encryption ?: null);
 
             if ($settings->mail_from_address) {
                 Config::set('mail.from.address', $settings->mail_from_address);

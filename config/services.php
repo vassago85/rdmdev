@@ -14,6 +14,16 @@ return [
     |
     */
 
+    'mailgun' => [
+        // All three values are overridden at runtime from the `app_settings`
+        // table by App\Providers\AppServiceProvider when present, so env
+        // values are just a fallback/default for fresh installs.
+        'domain'   => env('MAILGUN_DOMAIN'),
+        'secret'   => env('MAILGUN_SECRET'),
+        'endpoint' => env('MAILGUN_ENDPOINT', 'api.mailgun.net'),
+        'scheme'   => 'https',
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],

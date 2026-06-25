@@ -11,17 +11,23 @@ return new class extends Migration
         Schema::create('app_settings', function (Blueprint $table) {
             $table->id();
 
-            // ─── Email (SMTP) ──────────────────────────────────────────────
-            $table->string('mailer', 32)->default('smtp');
-            $table->string('mail_host')->nullable();
-            $table->unsignedSmallInteger('mail_port')->nullable();
-            $table->string('mail_username')->nullable();
-            // Encrypted at rest via the model's `encrypted` cast.
-            $table->text('mail_password')->nullable();
-            // 'tls', 'ssl', or NULL/empty for no encryption.
-            $table->string('mail_encryption', 16)->nullable();
+            // ─── Outgoing mail (Mailgun HTTP API) ─────────────────────────
+            // 'mailgun' or 'log'. 'log' just writes to laravel.log without
+            // sending — useful for local dev.
+            $table->string('mailer', 32)->default('mailgun');
+            // The sending domain you've added to Mailgun
+            // (e.g. mg.rdmdev.co.za). NOT your website domain unless
+            // you've explicitly set Mailgun up that way.
+            $table->string('mailgun_domain')->nullable();
+            // Mailgun "Sending API key" — encrypted at rest via the
+            // model's `encrypted` cast. NOT the SMTP password.
+            $table->text('mailgun_secret')->nullable();
+            // api.mailgun.net (US, default) or api.eu.mailgun.net (EU region).
+            $table->string('mailgun_endpoint')->default('api.mailgun.net');
+
             $table->string('mail_from_address')->nullable();
             $table->string('mail_from_name')->nullable();
+
             // Where contact-form enquiries get emailed.
             $table->string('enquiry_to')->nullable();
 

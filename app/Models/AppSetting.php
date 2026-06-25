@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Model;
  * Singleton settings row (id=1) holding the runtime config for the things the
  * site owner needs to be able to change without redeploying:
  *
- *   - SMTP credentials for outgoing email (enquiry notifications, password
- *     resets, etc.)
+ *   - Mailgun credentials (domain + API key) for outgoing email — enquiry
+ *     notifications, password resets, etc.
  *   - ntfy.sh push-notification settings (instant phone alerts when a new
  *     enquiry comes in)
  *
  * Read at the start of every request by AppServiceProvider (which overrides
- * config('mail.*') / config('rdm.enquiry_to') from this row), and on demand
- * by App\Services\NtfyService.
+ * config('services.mailgun.*') / config('mail.*') / config('rdm.enquiry_to')
+ * from this row), and on demand by App\Services\NtfyService.
  *
  * Edit via the Filament admin page at /admin/notifications — no env file
  * changes or container restarts required.
@@ -24,11 +24,9 @@ class AppSetting extends Model
 {
     protected $fillable = [
         'mailer',
-        'mail_host',
-        'mail_port',
-        'mail_username',
-        'mail_password',
-        'mail_encryption',
+        'mailgun_domain',
+        'mailgun_secret',
+        'mailgun_endpoint',
         'mail_from_address',
         'mail_from_name',
         'enquiry_to',
@@ -40,11 +38,10 @@ class AppSetting extends Model
     ];
 
     protected $casts = [
-        'mail_password' => 'encrypted',
-        'ntfy_token'    => 'encrypted',
-        'mail_port'     => 'integer',
-        'ntfy_enabled'  => 'boolean',
-        'ntfy_priority' => 'integer',
+        'mailgun_secret' => 'encrypted',
+        'ntfy_token'     => 'encrypted',
+        'ntfy_enabled'   => 'boolean',
+        'ntfy_priority'  => 'integer',
     ];
 
     /**
@@ -62,8 +59,9 @@ class AppSetting extends Model
         return $cached = static::firstOrCreate(
             ['id' => 1],
             [
-                'mailer'      => 'smtp',
-                'ntfy_server' => 'https://ntfy.sh',
+                'mailer'           => 'mailgun',
+                'mailgun_endpoint' => 'api.mailgun.net',
+                'ntfy_server'      => 'https://ntfy.sh',
             ]
         );
     }

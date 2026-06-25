@@ -39,12 +39,10 @@ class ManageNotifications extends Page implements HasForms
         $row = AppSetting::current();
 
         $this->form->fill([
-            'mailer'             => $row->mailer ?: 'smtp',
-            'mail_host'          => $row->mail_host,
-            'mail_port'          => $row->mail_port,
-            'mail_username'      => $row->mail_username,
-            'mail_password'      => $row->mail_password,
-            'mail_encryption'    => $row->mail_encryption,
+            'mailer'             => $row->mailer ?: 'mailgun',
+            'mailgun_domain'     => $row->mailgun_domain,
+            'mailgun_secret'     => $row->mailgun_secret,
+            'mailgun_endpoint'   => $row->mailgun_endpoint ?: 'api.mailgun.net',
             'mail_from_address'  => $row->mail_from_address,
             'mail_from_name'     => $row->mail_from_name,
             'enquiry_to'         => $row->enquiry_to ?: config('rdm.enquiry_to'),
@@ -63,9 +61,9 @@ class ManageNotifications extends Page implements HasForms
             ->schema([
                 Forms\Components\Tabs::make('settings')
                     ->tabs([
-                        Forms\Components\Tabs\Tab::make('Email (SMTP)')
+                        Forms\Components\Tabs\Tab::make('Email (Mailgun)')
                             ->icon('heroicon-o-envelope')
-                            ->schema($this->mailSchema()),
+                            ->schema($this->mailgunSchema()),
 
                         Forms\Components\Tabs\Tab::make('Push (ntfy)')
                             ->icon('heroicon-o-device-phone-mobile')
@@ -75,56 +73,55 @@ class ManageNotifications extends Page implements HasForms
     }
 
     /** @return array<int, \Filament\Forms\Components\Component> */
-    protected function mailSchema(): array
+    protected function mailgunSchema(): array
     {
         return [
-            Forms\Components\Section::make('SMTP server')
-                ->description('For Mailgun: host = smtp.mailgun.org (or smtp.eu.mailgun.org), port = 587, encryption = TLS, username = postmaster@mg.yourdomain, password = the SMTP password from Mailgun → Sending → Domain settings → SMTP credentials.')
+            Forms\Components\Section::make('Mailgun credentials')
+                ->description('Mailgun → Sending → Domains → click your sending domain → "API keys" tab. Use the "Sending API key" (starts with "key-" or similar). This is NOT the SMTP password.')
                 ->schema([
                     Forms\Components\Select::make('mailer')
                         ->label('Driver')
                         ->options([
-                            'smtp' => 'SMTP',
-                            'log'  => 'Log (write to laravel.log, don\'t send) — for testing',
+                            'mailgun' => 'Mailgun (HTTP API)',
+                            'log'     => 'Log (write to laravel.log, don\'t send) — for testing',
                         ])
                         ->required()
                         ->native(false),
-                    Forms\Components\TextInput::make('mail_host')
-                        ->label('SMTP host')
-                        ->placeholder('smtp.mailgun.org')
-                        ->maxLength(191),
-                    Forms\Components\TextInput::make('mail_port')
-                        ->label('Port')
-                        ->numeric()
-                        ->placeholder('587'),
-                    Forms\Components\Select::make('mail_encryption')
-                        ->label('Encryption')
-                        ->options([
-                            ''    => 'None',
-                            'tls' => 'TLS (recommended for port 587)',
-                            'ssl' => 'SSL (port 465)',
-                        ])
-                        ->native(false),
-                    Forms\Components\TextInput::make('mail_username')
-                        ->label('SMTP username')
-                        ->autocomplete('off')
-                        ->maxLength(191),
-                    Forms\Components\TextInput::make('mail_password')
-                        ->label('SMTP password')
+
+                    Forms\Components\TextInput::make('mailgun_domain')
+                        ->label('Sending domain')
+                        ->placeholder('mg.rdmdev.co.za')
+                        ->maxLength(191)
+                        ->helperText('The domain you added to Mailgun, e.g. mg.rdmdev.co.za (usually a subdomain).')
+                        ->required(fn (Forms\Get $get) => $get('mailer') === 'mailgun'),
+
+                    Forms\Components\TextInput::make('mailgun_secret')
+                        ->label('API key')
                         ->password()
                         ->revealable()
                         ->autocomplete('new-password')
                         ->maxLength(500)
-                        ->helperText('Stored encrypted in the database.'),
+                        ->helperText('Stored encrypted in the database.')
+                        ->required(fn (Forms\Get $get) => $get('mailer') === 'mailgun'),
+
+                    Forms\Components\Select::make('mailgun_endpoint')
+                        ->label('Region')
+                        ->options([
+                            'api.mailgun.net'    => 'US (api.mailgun.net) — default',
+                            'api.eu.mailgun.net' => 'EU (api.eu.mailgun.net)',
+                        ])
+                        ->required()
+                        ->native(false)
+                        ->helperText('Match the region you picked when creating the Mailgun account.'),
                 ])->columns(2),
 
             Forms\Components\Section::make('From address')
-                ->description('What the outgoing emails will be sent as. Most providers require the From address to be on a domain you own and have verified with them.')
+                ->description('What outgoing emails will be sent as. The From address must be on the same domain you configured above (or a domain you\'ve verified with Mailgun).')
                 ->schema([
                     Forms\Components\TextInput::make('mail_from_address')
                         ->label('From email')
                         ->email()
-                        ->placeholder('no-reply@rdmdev.co.za')
+                        ->placeholder('no-reply@mg.rdmdev.co.za')
                         ->maxLength(191),
                     Forms\Components\TextInput::make('mail_from_name')
                         ->label('From name')
@@ -309,20 +306,19 @@ class ManageNotifications extends Page implements HasForms
     }
 
     /**
-     * Override mail config in-memory for this request using whatever the user
-     * currently has in the form. Used by the "Send test email" action so a
-     * test can run against unsaved values.
+     * Override mail/services config in-memory for this request using whatever
+     * the user currently has in the form. Used by the "Send test email" action
+     * so a test can run against unsaved values.
      */
     protected function applyMailFormStateToConfig(): void
     {
         $state = $this->form->getState();
 
-        Config::set('mail.default', $state['mailer'] ?: 'smtp');
-        Config::set('mail.mailers.smtp.host', $state['mail_host'] ?: null);
-        Config::set('mail.mailers.smtp.port', $state['mail_port'] ?: null);
-        Config::set('mail.mailers.smtp.username', $state['mail_username'] ?: null);
-        Config::set('mail.mailers.smtp.password', $state['mail_password'] ?: null);
-        Config::set('mail.mailers.smtp.encryption', $state['mail_encryption'] ?: null);
+        Config::set('mail.default', $state['mailer'] ?: 'mailgun');
+
+        Config::set('services.mailgun.domain', $state['mailgun_domain'] ?: null);
+        Config::set('services.mailgun.secret', $state['mailgun_secret'] ?: null);
+        Config::set('services.mailgun.endpoint', $state['mailgun_endpoint'] ?: 'api.mailgun.net');
 
         if (! empty($state['mail_from_address'])) {
             Config::set('mail.from.address', $state['mail_from_address']);
