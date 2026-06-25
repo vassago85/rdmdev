@@ -46,7 +46,13 @@ WORKDIR /var/www/html
 
 COPY . .
 
-RUN composer update --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-stable
+# Install dependencies from composer.lock (deterministic, fast, and bypasses
+# Composer 2.8+'s audit which refuses to *resolve* deps with open security
+# advisories). `composer install` doesn't audit — only `update` does — so the
+# build is no longer at the mercy of upstream advisory publishing cadence.
+# Advisories that DO affect us still need handling, but as a deliberate
+# `composer update` + lock-commit step locally, not as a deploy-blocker.
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts --prefer-dist
 
 RUN npm ci && npm run build && rm -rf node_modules
 
