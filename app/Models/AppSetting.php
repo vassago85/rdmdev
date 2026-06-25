@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Singleton settings row (id=1) holding the runtime config for the things the
+ * site owner needs to be able to change without redeploying:
+ *
+ *   - SMTP credentials for outgoing email (enquiry notifications, password
+ *     resets, etc.)
+ *   - ntfy.sh push-notification settings (instant phone alerts when a new
+ *     enquiry comes in)
+ *
+ * Read at the start of every request by AppServiceProvider (which overrides
+ * config('mail.*') / config('rdm.enquiry_to') from this row), and on demand
+ * by App\Services\NtfyService.
+ *
+ * Edit via the Filament admin page at /admin/notifications — no env file
+ * changes or container restarts required.
+ */
+class AppSetting extends Model
+{
+    protected $fillable = [
+        'mailer',
+        'mail_host',
+        'mail_port',
+        'mail_username',
+        'mail_password',
+        'mail_encryption',
+        'mail_from_address',
+        'mail_from_name',
+        'enquiry_to',
+        'ntfy_enabled',
+        'ntfy_server',
+        'ntfy_topic',
+        'ntfy_token',
+        'ntfy_priority',
+    ];
+
+    protected $casts = [
+        'mail_password' => 'encrypted',
+        'ntfy_token'    => 'encrypted',
+        'mail_port'     => 'integer',
+        'ntfy_enabled'  => 'boolean',
+        'ntfy_priority' => 'integer',
+    ];
+
+    /**
+     * Return the single settings row, creating it on first call. Cached for
+     * the lifetime of the request to avoid repeat queries.
+     */
+    public static function current(): self
+    {
+        static $cached = null;
+
+        if ($cached instanceof self) {
+            return $cached;
+        }
+
+        return $cached = static::firstOrCreate(
+            ['id' => 1],
+            [
+                'mailer'      => 'smtp',
+                'ntfy_server' => 'https://ntfy.sh',
+            ]
+        );
+    }
+}
