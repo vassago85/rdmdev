@@ -13,7 +13,7 @@ class ServiceController extends Controller
         return view('services.index', [
             'services'        => $services,
             'pageTitle'       => 'Our Services in Pretoria East | RDM Developments',
-            'metaDescription' => 'Building and renovation services across Pretoria East — bathrooms, home renovations, garage conversions, building contractors and painting. Personally supervised by Ruben Metcalfe.',
+            'metaDescription' => 'Building and renovation services across Pretoria East — building, bathroom renovations, tiling, waterproofing and painting. Personally supervised by Ruben Metcalfe.',
         ]);
     }
 

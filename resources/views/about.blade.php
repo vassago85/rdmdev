@@ -52,7 +52,7 @@
                 <li><strong>Honest quotes.</strong> Clear scope, clear pricing, no hidden extras.</li>
                 <li><strong>Owner on-site.</strong> Ruben is your direct line for the whole project.</li>
                 <li><strong>Tidy sites.</strong> We respect that you live there — we protect, cover and clean.</li>
-                <li><strong>Quality tradesmen.</strong> Same plumbers, sparkies and tilers, project after project.</li>
+                <li><strong>Quality tradesmen.</strong> Same plumbers and tilers, project after project.</li>
                 <li><strong>Realistic timelines.</strong> Promises we can keep, not ones that look good on paper.</li>
             </ul>
 
@@ -87,6 +87,30 @@
                     <li>
                         <p class="text-xs uppercase text-ink-400 tracking-wide">Area</p>
                         <p class="font-semibold">{{ config('rdm.location') }}</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card p-6">
+                <h3 class="!text-lg">Company details</h3>
+                <ul class="mt-4 space-y-3 text-ink-700 text-sm">
+                    <li>
+                        <p class="text-xs uppercase text-ink-400 tracking-wide">Legal name</p>
+                        <p class="font-semibold">{{ config('rdm.legal_name') }}</p>
+                    </li>
+                    <li>
+                        <p class="text-xs uppercase text-ink-400 tracking-wide">Registration number</p>
+                        <p class="font-semibold">{{ config('rdm.registration_number') }}</p>
+                    </li>
+                    <li>
+                        <p class="text-xs uppercase text-ink-400 tracking-wide">NHBRC</p>
+                        <p class="font-semibold">
+                            Registered with the NHBRC as a home builder
+                            @if (config('rdm.nhbrc_number'))
+                                <span class="block text-ink-500 font-normal mt-1">{{ config('rdm.nhbrc_number') }}</span>
+                            @endif
+                        </p>
+                        {{-- TODO: supply NHBRC home-builder registration number when available. --}}
                     </li>
                 </ul>
             </div>

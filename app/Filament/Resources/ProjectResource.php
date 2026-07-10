@@ -51,7 +51,7 @@ class ProjectResource extends Resource
                         ->helperText('Renovations show a before / after gallery. Builds show a completed gallery.'),
                     Forms\Components\TextInput::make('category')
                         ->maxLength(80)
-                        ->placeholder('Bathroom, Kitchen, Extension, Garage Conversion…'),
+                        ->placeholder('Bathroom, Building, Tiling, Waterproofing, Painting…'),
                     Forms\Components\TextInput::make('location')
                         ->label('Location / suburb')
                         ->maxLength(120)

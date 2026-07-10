@@ -136,9 +136,9 @@
             <p class="eyebrow">What we do</p>
             <h2 class="mt-2">Services across Pretoria East</h2>
             <p class="mt-4 text-lg text-ink-500 leading-relaxed">
-                From full home renovations to standalone bathrooms and one-off custom builds —
-                every service is personally supervised by {{ config('rdm.owner') }}, from the first
-                quote to the final clean-up.
+            From bathroom renovations and tiling to building, waterproofing and painting —
+            every service is personally supervised by {{ config('rdm.owner') }}, from the first
+            quote to the final clean-up.
             </p>
         </div>
 
@@ -160,6 +160,11 @@
                 </a>
             @endforeach
         </div>
+
+        <p class="mt-10 max-w-2xl text-sm text-ink-400 leading-relaxed">
+            We do not offer electrical work. Where a project requires it, the client
+            appoints their own registered electrician.
+        </p>
     </div>
 </section>
 

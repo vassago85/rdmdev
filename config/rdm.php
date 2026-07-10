@@ -7,6 +7,11 @@ return [
     'owner'       => env('RDM_OWNER', 'Ruben Metcalfe'),
     'location'    => env('RDM_LOCATION', 'Pretoria East, Gauteng'),
 
+    'legal_name'            => 'RDM Developments (Pty) Ltd',
+    'registration_number'  => '2025/525638/07',
+    // TODO: supply NHBRC home-builder registration number when available.
+    'nhbrc_number'          => env('RDM_NHBRC_NUMBER'),
+
     'phone'       => env('RDM_PHONE', '072 972 9393'),
     'phone_tel'   => env('RDM_PHONE_TEL', '+27729729393'),
     'whatsapp'    => env('RDM_WHATSAPP', '27729729393'),

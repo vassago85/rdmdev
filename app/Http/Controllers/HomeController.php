@@ -30,7 +30,7 @@ class HomeController extends Controller
             'services'         => $services,
             'featuredProjects' => $featuredProjects,
             'pageTitle'        => 'Builder & Renovations Pretoria East | RDM Developments',
-            'metaDescription'  => 'Owner-managed builder and renovation specialist in Pretoria East. Bathroom and home renovations, garage conversions, building contractors and more — personally supervised by Ruben Metcalfe.',
+            'metaDescription'  => 'Owner-managed builder in Pretoria East. Building, bathroom renovations (including plumbing), tiling, waterproofing and painting — personally supervised by Ruben Metcalfe.',
         ]);
     }
 }

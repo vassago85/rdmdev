@@ -32,6 +32,11 @@
             </a>
         @endforeach
     </div>
+
+    <p class="container mt-10 max-w-2xl text-sm text-ink-400 leading-relaxed">
+        We do not offer electrical work. Where a project requires it, the client
+        appoints their own registered electrician.
+    </p>
 </section>
 
 @include('partials.cta')
