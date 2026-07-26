@@ -10,7 +10,7 @@
         ]" tone="dark" />
         <p class="eyebrow !text-brand-200">Services</p>
         <h1 class="!text-white mt-3 max-w-3xl">Building &amp; renovation services across Pretoria East</h1>
-        <p class="mt-5 text-lg text-ink-100/90 max-w-2xl">
+        <p class="mt-5 text-lg text-ink-100 max-w-2xl">
             Pick the service you need to learn more, or get in touch directly —
             {{ config('rdm.owner') }} will talk you through what's possible.
         </p>
@@ -20,24 +20,11 @@
 <section class="section">
     <div class="container grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         @foreach ($services as $service)
-            <a href="{{ route('services.show', $service->slug) }}"
-               class="card p-6 hover:shadow-lg hover:-translate-y-0.5 transition block group">
-                <div class="inline-flex items-center justify-center h-12 w-12 rounded-lg bg-brand-50 text-brand-600 mb-5">
-                    <x-service-icon :icon="$service->icon ?: 'home'" />
-                </div>
-                <h2 class="!text-xl group-hover:text-brand-600 transition">{{ $service->title }}</h2>
-                @if ($service->tagline)
-                    <p class="mt-1 text-sm font-semibold text-brand-600">{{ $service->tagline }}</p>
-                @endif
-                @if ($service->excerpt)
-                    <p class="mt-3 text-ink-500 text-[15px] leading-relaxed">{{ \Illuminate\Support\Str::limit($service->excerpt, 170) }}</p>
-                @endif
-                <p class="mt-5 text-sm font-semibold text-brand-600">Learn more &rarr;</p>
-            </a>
+            @include('partials.service-card', ['service' => $service, 'headingTag' => 'h2'])
         @endforeach
     </div>
 
-    <p class="container mt-10 max-w-2xl text-sm text-ink-400 leading-relaxed">
+    <p class="container mt-10 max-w-2xl text-sm text-ink-500 leading-relaxed">
         We do not offer electrical work. Where a project requires it, the client
         appoints their own registered electrician.
     </p>

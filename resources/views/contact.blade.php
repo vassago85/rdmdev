@@ -113,12 +113,12 @@
                 We're focused on Pretoria East so we can be on-site fast and stay close to every project.
             </p>
         </div>
-        <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div class="mt-8 flex flex-wrap gap-2.5">
             @foreach (config('rdm.suburbs') as $suburb)
-                <div class="card px-4 py-3 flex items-center gap-2.5 text-sm font-semibold text-ink-700 hover:border-brand-200 hover:text-brand-700 transition">
-                    <x-lucide name="map-pin" class="h-4 w-4 text-brand-500" />
+                <span class="suburb-pill">
+                    <x-lucide name="map-pin" class="h-3.5 w-3.5 text-brand-500" />
                     {{ $suburb }}
-                </div>
+                </span>
             @endforeach
         </div>
     </div>

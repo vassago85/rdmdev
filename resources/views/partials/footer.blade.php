@@ -38,7 +38,7 @@
                 <li class="flex items-center gap-2"><x-lucide name="mail" class="h-4 w-4 text-brand-300" /> <a class="hover:text-white" href="mailto:{{ config('rdm.email') }}">{{ config('rdm.email') }}</a></li>
                 <li class="flex items-center gap-2 text-ink-300"><x-lucide name="map-pin" class="h-4 w-4 text-brand-300" /> {{ config('rdm.location') }}</li>
             </ul>
-            <div class="mt-5 space-y-1 text-xs text-ink-400 leading-relaxed">
+            <div class="mt-5 space-y-1 text-sm text-ink-200 leading-relaxed">
                 <p>{{ config('rdm.legal_name') }}</p>
                 <p>Registration number {{ config('rdm.registration_number') }}</p>
                 <p>
@@ -51,7 +51,7 @@
         </div>
     </div>
     <div class="border-t border-white/10">
-        <div class="container py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-ink-300">
+        <div class="container py-5 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-ink-200">
             <p>&copy; {{ date('Y') }} {{ config('rdm.legal_name') }}. All rights reserved.</p>
             <p>Pretoria East · Gauteng · South Africa</p>
         </div>

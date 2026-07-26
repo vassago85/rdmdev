@@ -35,9 +35,9 @@
             @if ($project->completed_on)
                 <span>Completed {{ $project->completed_on->format('M Y') }}</span>
             @endif
-            @if ($project->location)
+            @if ($label = $project->locationLabel())
                 <span>·</span>
-                <span>Location: {{ $project->location }}, Pretoria East</span>
+                <span>Location: {{ $label }}</span>
             @endif
         </div>
     </div>
@@ -59,7 +59,7 @@
             {!! $project->description !!}
             @if (! $project->description)
                 <p>
-                    {{ $project->title }} — a project completed by {{ config('rdm.name') }}{{ $project->location ? ' in '.$project->location.', Pretoria East' : '' }}.
+                    {{ $project->baseTitle() }} — a project completed by {{ config('rdm.name') }}{{ ($label = $project->locationLabel()) ? ' in '.$label : '' }}.
                 </p>
             @endif
         </article>
@@ -76,9 +76,9 @@
                         <dt class="col-span-1 text-ink-500">Type</dt>
                         <dd class="col-span-2 font-semibold capitalize">{{ $project->project_type }}</dd>
                     @endif
-                    @if ($project->location)
+                    @if ($label = $project->locationLabel())
                         <dt class="col-span-1 text-ink-500">Location</dt>
-                        <dd class="col-span-2 font-semibold">{{ $project->location }}, Pretoria East</dd>
+                        <dd class="col-span-2 font-semibold">{{ $label }}</dd>
                     @endif
                     @if ($project->completed_on)
                         <dt class="col-span-1 text-ink-500">Completed</dt>

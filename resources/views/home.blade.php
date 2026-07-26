@@ -2,26 +2,50 @@
 
 @section('content')
 
+@php
+    // PLACEHOLDER: drop public/images/hero-home.jpg (or .webp / .png) to replace the gradient.
+    $heroFile = collect(['hero-home.webp', 'hero-home.jpg', 'hero-home.png'])
+        ->first(fn ($file) => file_exists(public_path('images/' . $file)));
+    $heroUrl = $heroFile ? asset('images/' . $heroFile) : null;
+    $featuredCount = $featuredProjects->count();
+@endphp
+
 {{-- HERO --}}
-<section class="relative overflow-hidden bg-ink-800 text-white">
-    <div aria-hidden="true" class="absolute inset-0 opacity-20">
-        <svg class="absolute -right-10 -top-10 h-[500px] w-[500px] text-brand-400" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 100 100">
-            <path d="M0 70 L50 10 L100 70" />
-            <path d="M20 70 L50 30 L80 70" />
-        </svg>
+<section class="relative overflow-hidden text-white">
+    <div class="absolute inset-0" aria-hidden="true">
+        @if ($heroUrl)
+            <img
+                src="{{ $heroUrl }}"
+                alt=""
+                class="absolute inset-0 h-full w-full object-cover"
+                width="1920"
+                height="1080"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+            >
+        @else
+            {{-- Branded fallback until hero-home.jpg is uploaded — see public/images/README-hero.md --}}
+            <div class="absolute inset-0 bg-gradient-to-br from-ink-900 via-ink-800 to-brand-800"></div>
+            <div class="absolute inset-0 opacity-30"
+                 style="background-image: radial-gradient(circle at 80% 20%, rgba(201,169,97,0.25), transparent 45%), radial-gradient(circle at 10% 80%, rgba(47,93,98,0.45), transparent 40%);"></div>
+        @endif
+        {{-- Dark gradient overlay — keeps type legible over any photo --}}
+        <div class="absolute inset-0 bg-gradient-to-r from-ink-900/95 via-ink-900/80 to-ink-900/55"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-ink-900/50 via-transparent to-ink-900/30"></div>
     </div>
 
-    <div class="container relative grid gap-12 py-16 sm:py-20 lg:py-28 lg:grid-cols-[1.4fr_1fr] lg:items-center">
+    <div class="container relative grid gap-8 lg:gap-10 py-12 sm:py-14 lg:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center">
         <div>
             <p class="eyebrow !text-brand-200">Pretoria East · Gauteng</p>
-            <h1 class="!text-white mt-4">Reliable Building &amp; Renovation Contractors in Pretoria&nbsp;East</h1>
-            <p class="mt-6 text-lg sm:text-xl text-ink-100/90 max-w-2xl leading-relaxed">
+            <h1 class="!text-white mt-3">Reliable Building &amp; Renovation Contractors in Pretoria&nbsp;East</h1>
+            <p class="mt-4 text-base sm:text-lg text-ink-100 max-w-xl leading-relaxed">
                 {{ config('rdm.name') }} is an owner-managed construction business run by
                 {{ config('rdm.owner') }}. Small team, clear communication, and proper finishes —
-                from bathroom renovations to full home remodels and custom builds.
+                building, bathrooms, tiling, waterproofing and painting.
             </p>
 
-            <div class="mt-8 flex flex-wrap gap-3">
+            <div class="mt-6 flex flex-wrap gap-3">
                 <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-lg bg-white text-brand-700 hover:bg-brand-50">
                     <x-lucide name="phone" class="h-5 w-5" stroke="2" />
                     Call Ruben
@@ -37,59 +61,38 @@
                     Request a Quote
                 </a>
             </div>
-
-            <ul class="mt-10 grid gap-4 sm:grid-cols-3 text-sm text-ink-100/90">
-                <li class="flex items-start gap-3">
-                    <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-brand-200">
-                        <x-lucide name="shield-check" class="h-5 w-5" />
-                    </span>
-                    <span class="pt-1.5 font-medium">Owner-managed projects</span>
-                </li>
-                <li class="flex items-start gap-3">
-                    <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-brand-200">
-                        <x-lucide name="file-text" class="h-5 w-5" />
-                    </span>
-                    <span class="pt-1.5 font-medium">Honest, itemised quotes</span>
-                </li>
-                <li class="flex items-start gap-3">
-                    <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-500/20 text-brand-200">
-                        <x-lucide name="check-circle-2" class="h-5 w-5" />
-                    </span>
-                    <span class="pt-1.5 font-medium">Clean finishes, on time</span>
-                </li>
-            </ul>
         </div>
 
-        {{-- OWNER / TRUST CARD --}}
-        <div class="lg:pl-6">
-            <div class="bg-white/5 backdrop-blur border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="h-12 w-12 rounded-full bg-brand-500 text-white grid place-items-center font-bold text-lg">RM</div>
+        {{-- OWNER / TRUST CARD — kept for credibility, now over the photo --}}
+        <div class="lg:pl-4">
+            <div class="bg-ink-900/55 backdrop-blur-md border border-white/15 rounded-2xl p-5 sm:p-6 shadow-2xl">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="h-11 w-11 rounded-full bg-brand-500 text-white grid place-items-center font-bold text-lg">RM</div>
                     <div>
-                        <p class="font-semibold text-white leading-tight text-lg">{{ config('rdm.owner') }}</p>
+                        <p class="font-semibold text-white leading-tight">{{ config('rdm.owner') }}</p>
                         <p class="text-sm text-ink-200">Owner · RDM Developments</p>
                     </div>
                 </div>
-                <p class="text-ink-100 leading-relaxed italic">
+                <p class="text-ink-100 leading-relaxed italic text-[15px]">
                     "Every project I quote, I run. No middlemen, no surprises — just good work, on time, on budget."
                 </p>
 
-                <ul class="mt-6 space-y-2.5 text-sm text-ink-100">
-                    <li class="flex items-center gap-2.5">
+                <ul class="mt-4 space-y-2 text-sm text-ink-100">
+                    <li class="flex items-center gap-2">
                         <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
                         Owner on every project
                     </li>
-                    <li class="flex items-center gap-2.5">
-                        <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
-                        No middlemen
-                    </li>
-                    <li class="flex items-center gap-2.5">
+                    <li class="flex items-center gap-2">
                         <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
                         Pretoria East focused
                     </li>
+                    <li class="flex items-center gap-2">
+                        <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
+                        NHBRC-registered home builder
+                    </li>
                 </ul>
 
-                <div class="mt-6 flex flex-col gap-2">
+                <div class="mt-5 flex flex-col gap-2">
                     <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-md bg-brand-500 text-white hover:bg-brand-400">
                         <x-lucide name="phone" class="h-4 w-4" />
                         {{ config('rdm.phone') }}
@@ -104,24 +107,31 @@
     </div>
 </section>
 
+@include('partials.trust-bar')
+
 {{-- FEATURED PROJECTS --}}
-@if ($featuredProjects->count())
+@if ($featuredCount)
 <section class="section">
     <div class="container">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-            <div class="max-w-xl">
+            <div class="max-w-2xl">
                 <p class="eyebrow">Recent work</p>
                 <h2 class="mt-2">Featured projects</h2>
-                <p class="mt-4 text-ink-500 leading-relaxed">A selection of the renovations and builds we've completed across Pretoria East.</p>
+                <p class="mt-3 text-ink-500 leading-relaxed">A selection of the renovations and builds we've completed across Pretoria East.</p>
             </div>
-            <a href="{{ route('projects.index') }}" class="btn-ghost !text-base inline-flex items-center gap-1.5">
+            <a href="{{ route('projects.index') }}" class="btn-ghost !text-base inline-flex items-center gap-1.5 shrink-0">
                 View all projects
                 <x-lucide name="arrow-right" class="h-4 w-4" />
             </a>
         </div>
 
-        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach ($featuredProjects as $project)
+        <div @class([
+            'mt-10 grid gap-6',
+            'max-w-xl mx-auto' => $featuredCount === 1,
+            'sm:grid-cols-2 max-w-4xl mx-auto' => $featuredCount === 2,
+            'sm:grid-cols-2 lg:grid-cols-3' => $featuredCount >= 3,
+        ])>
+            @foreach ($featuredProjects->take(3) as $project)
                 @include('partials.project-card', ['project' => $project])
             @endforeach
         </div>
@@ -132,36 +142,29 @@
 {{-- SERVICES --}}
 <section class="section bg-ink-50/60 border-y border-ink-100">
     <div class="container">
-        <div class="max-w-2xl">
-            <p class="eyebrow">What we do</p>
-            <h2 class="mt-2">Services across Pretoria East</h2>
-            <p class="mt-4 text-lg text-ink-500 leading-relaxed">
-            From bathroom renovations and tiling to building, waterproofing and painting —
-            every service is personally supervised by {{ config('rdm.owner') }}, from the first
-            quote to the final clean-up.
-            </p>
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+            <div class="max-w-2xl">
+                <p class="eyebrow">What we do</p>
+                <h2 class="mt-2">Services across Pretoria East</h2>
+                <p class="mt-3 text-lg text-ink-500 leading-relaxed">
+                    From bathroom renovations and tiling to building, waterproofing and painting —
+                    every service is personally supervised by {{ config('rdm.owner') }}, from the first
+                    quote to the final clean-up.
+                </p>
+            </div>
+            <a href="{{ route('services.index') }}" class="btn-ghost !text-base inline-flex items-center gap-1.5 shrink-0">
+                All services
+                <x-lucide name="arrow-right" class="h-4 w-4" />
+            </a>
         </div>
 
-        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             @foreach ($services as $service)
-                <a href="{{ route('services.show', $service->slug) }}"
-                   class="card p-6 block group transition hover:shadow-lg hover:-translate-y-0.5 hover:border-brand-200">
-                    <div class="inline-flex items-center justify-center h-12 w-12 rounded-lg bg-brand-50 text-brand-600 mb-5 group-hover:bg-brand-600 group-hover:text-white transition">
-                        <x-service-icon :icon="$service->icon ?: 'house'" />
-                    </div>
-                    <h3 class="!text-xl group-hover:text-brand-600 transition">{{ $service->title }}</h3>
-                    @if ($service->excerpt)
-                        <p class="mt-3 text-ink-500 text-[15px] leading-relaxed">{{ \Illuminate\Support\Str::limit($service->excerpt, 155) }}</p>
-                    @endif
-                    <p class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 group-hover:gap-2.5 transition-all">
-                        Learn more
-                        <x-lucide name="arrow-right" class="h-4 w-4" />
-                    </p>
-                </a>
+                @include('partials.service-card', ['service' => $service])
             @endforeach
         </div>
 
-        <p class="mt-10 max-w-2xl text-sm text-ink-400 leading-relaxed">
+        <p class="mt-10 max-w-2xl text-sm text-ink-500 leading-relaxed">
             We do not offer electrical work. Where a project requires it, the client
             appoints their own registered electrician.
         </p>
@@ -171,16 +174,16 @@
 {{-- WHY CHOOSE RDM --}}
 <section class="section">
     <div class="container">
-        <div class="max-w-2xl">
+        <div class="max-w-2xl mx-auto text-center lg:max-w-none lg:text-left lg:mx-0">
             <p class="eyebrow">Why RDM</p>
             <h2 class="mt-2">A small, focused team — and it shows in the finish</h2>
-            <p class="mt-4 text-lg text-ink-500 leading-relaxed">
+            <p class="mt-3 text-lg text-ink-500 leading-relaxed max-w-2xl lg:mx-0 mx-auto">
                 The difference between a good renovation and a frustrating one is almost always
                 the person running it. Here's what working with us looks like.
             </p>
         </div>
 
-        <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             @php
                 $why = [
                     ['icon' => 'users',          'title' => 'Small, focused team',      'body' => 'We stay deliberately small so every project gets real attention — no call centre, no juggling twenty sites at once.'],
@@ -190,7 +193,7 @@
                 ];
             @endphp
             @foreach ($why as $item)
-                <div class="card p-6 hover:shadow-lg transition">
+                <div class="card-interactive p-6">
                     <div class="inline-flex items-center justify-center h-11 w-11 rounded-lg bg-brand-50 text-brand-600 mb-4">
                         <x-lucide :name="$item['icon']" class="h-6 w-6" stroke="1.8" />
                     </div>
@@ -202,38 +205,27 @@
     </div>
 </section>
 
+@include('partials.testimonials')
+
 {{-- AREAS WE SERVE --}}
 <section class="section bg-ink-50/60 border-y border-ink-100">
     <div class="container">
-        <div class="grid gap-12 lg:grid-cols-[1fr_1.3fr] lg:items-center">
-            <div>
-                <p class="eyebrow">Where we work</p>
-                <h2 class="mt-2">Areas We Serve in Pretoria East</h2>
-                <p class="mt-4 text-lg text-ink-500 leading-relaxed">
-                    We focus on Pretoria East so we can be on-site fast and stay properly involved
-                    with every project — not stretched thin across the whole of Gauteng.
-                </p>
-                <div class="mt-6 inline-flex items-center gap-2 text-brand-700 font-semibold">
-                    <x-lucide name="map-pin" class="h-5 w-5" />
-                    <span>Pretoria East, Gauteng</span>
-                </div>
-            </div>
+        <div class="max-w-2xl mx-auto text-center">
+            <p class="eyebrow">Where we work</p>
+            <h2 class="mt-2">Areas we serve in Pretoria East</h2>
+            <p class="mt-3 text-lg text-ink-500 leading-relaxed">
+                We focus on Pretoria East so we can be on-site fast and stay properly involved
+                with every project — not stretched thin across the whole of Gauteng.
+            </p>
+        </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                @php
-                    $homeSuburbs = [
-                        'Faerie Glen', 'Garsfontein', 'Moreleta Park',
-                        'Silver Lakes', 'Woodhill', 'Elardus Park',
-                        'Olympus', 'Lynnwood', 'Wapadrand',
-                    ];
-                @endphp
-                @foreach ($homeSuburbs as $suburb)
-                    <div class="card px-4 py-3 flex items-center gap-2.5 text-sm font-semibold text-ink-700 hover:border-brand-200 hover:text-brand-700 transition">
-                        <x-lucide name="map-pin" class="h-4 w-4 text-brand-500" />
-                        {{ $suburb }}
-                    </div>
-                @endforeach
-            </div>
+        <div class="mt-10 flex flex-wrap justify-center gap-2.5 sm:gap-3">
+            @foreach (config('rdm.suburbs') as $suburb)
+                <span class="suburb-pill">
+                    <x-lucide name="map-pin" class="h-3.5 w-3.5 text-brand-500" />
+                    {{ $suburb }}
+                </span>
+            @endforeach
         </div>
     </div>
 </section>
@@ -271,9 +263,6 @@
 
         <div class="relative">
             <div class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 shadow-card p-8 text-white flex flex-col justify-between">
-                {{-- Intentionally stretched vertically (double height, same width)
-                     — uses a direct <img> to bypass the component's aspect-locked
-                     width/height HTML attrs. --}}
                 <picture>
                     <source
                         type="image/webp"
@@ -287,8 +276,7 @@
                         alt="RDM Developments — Building &amp; Renovation"
                         width="134"
                         height="56"
-                        loading="eager"
-                        fetchpriority="high"
+                        loading="lazy"
                         decoding="async"
                         class="block"
                         style="width: 134px; height: auto; filter: brightness(0) invert(1);"

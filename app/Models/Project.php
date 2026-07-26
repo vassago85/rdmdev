@@ -121,12 +121,28 @@ class Project extends Model
     public function displayHeading(): string
     {
         $base = $this->baseTitle();
+        $place = $this->locationLabel();
 
-        if ($this->location) {
-            return $base . ' — ' . $this->location . ', Pretoria East';
+        return $place ? $base . ' — ' . $place : $base . ' — Pretoria East';
+    }
+
+    /**
+     * Card/subtitle location without duplicating "Pretoria East".
+     * e.g. "Garsfontein, Pretoria East" — never "Pretoria East, Pretoria East".
+     */
+    public function locationLabel(): ?string
+    {
+        $location = trim((string) $this->location);
+
+        if ($location === '') {
+            return null;
         }
 
-        return $base . ' — Pretoria East';
+        if (stripos($location, 'Pretoria East') !== false) {
+            return $location;
+        }
+
+        return $location . ', Pretoria East';
     }
 
     public function seoTitle(): string

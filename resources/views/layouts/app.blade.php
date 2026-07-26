@@ -15,7 +15,7 @@
 
     @include('partials.header')
 
-    <main class="flex-1">
+    <main class="flex-1 whatsapp-safe">
         {{ $slot ?? '' }}
         @yield('content')
     </main>
