@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Support\JsonLd;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
@@ -24,6 +25,12 @@ class ProjectController extends Controller
             'activeType'      => $type,
             'pageTitle'       => 'Completed Projects in Pretoria East | RDM Developments',
             'metaDescription' => 'A gallery of completed building and renovation projects across Pretoria East — including before-and-after renovations and new builds.',
+            'schemaExtra'     => [
+                JsonLd::breadcrumbs([
+                    ['name' => 'Home', 'url' => route('home')],
+                    ['name' => 'Projects'],
+                ]),
+            ],
         ]);
     }
 
@@ -45,6 +52,15 @@ class ProjectController extends Controller
             'related'         => $related,
             'pageTitle'       => $project->seoTitle(),
             'metaDescription' => $project->metaDescription(),
+            'ogImage'         => $project->featuredImageUrl() ?: null,
+            'schemaExtra'     => [
+                JsonLd::project($project),
+                JsonLd::breadcrumbs([
+                    ['name' => 'Home', 'url' => route('home')],
+                    ['name' => 'Projects', 'url' => route('projects.index')],
+                    ['name' => $project->baseTitle()],
+                ]),
+            ],
         ]);
     }
 }

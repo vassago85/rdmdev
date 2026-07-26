@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/*
 
-Sitemap: /sitemap.xml
+Sitemap: https://rdmdev.co.za/sitemap.xml

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\JsonLd;
+
 class PageController extends Controller
 {
     public function about()
@@ -17,6 +19,9 @@ class PageController extends Controller
         return view('contact', [
             'pageTitle'       => 'Contact RDM Developments | Pretoria East Builder',
             'metaDescription' => 'Request a quote from RDM Developments for your building or renovation project in Pretoria East. Call, WhatsApp or complete the enquiry form.',
+            'schemaExtra'     => [
+                JsonLd::contactPage(),
+            ],
         ]);
     }
 }

@@ -12,13 +12,11 @@
 
 <section class="bg-ink-800 text-white">
     <div class="container py-14 sm:py-20">
-        <nav class="text-sm text-ink-200 mb-5" aria-label="Breadcrumb">
-            <a href="{{ route('home') }}" class="hover:text-white">Home</a>
-            <span class="mx-1.5 text-ink-400">/</span>
-            <a href="{{ route('projects.index') }}" class="hover:text-white">Projects</a>
-            <span class="mx-1.5 text-ink-400">/</span>
-            <span class="text-white">{{ $project->title }}</span>
-        </nav>
+        <x-breadcrumbs :items="[
+            ['name' => 'Home', 'url' => route('home')],
+            ['name' => 'Projects', 'url' => route('projects.index')],
+            ['name' => $project->baseTitle()],
+        ]" tone="dark" />
 
         <div class="flex flex-wrap gap-2 mb-3">
             @if ($project->category)
@@ -31,12 +29,7 @@
             @endif
         </div>
 
-        <h1 class="!text-white max-w-4xl">
-            {{ $project->title }}
-            @if ($project->location)
-                <span class="block text-brand-200 mt-2 text-2xl sm:text-3xl font-display">in {{ $project->location }}, Pretoria East</span>
-            @endif
-        </h1>
+        <h1 class="!text-white max-w-4xl">{{ $project->displayHeading() }}</h1>
 
         <div class="mt-6 flex flex-wrap gap-4 text-sm text-ink-200">
             @if ($project->completed_on)
@@ -54,7 +47,7 @@
 @if ($hero)
 <section class="bg-ink-800 pb-10 -mt-4">
     <div class="container">
-        <img src="{{ $hero }}" alt="{{ $project->title }}" class="w-full aspect-video object-cover rounded-xl shadow-card" loading="eager">
+        <img src="{{ $hero }}" alt="{{ $project->displayHeading() }}" class="w-full aspect-video object-cover rounded-xl shadow-card" loading="eager" fetchpriority="high" decoding="async">
     </div>
 </section>
 @endif

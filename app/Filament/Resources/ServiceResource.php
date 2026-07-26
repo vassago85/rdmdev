@@ -55,6 +55,7 @@ class ServiceResource extends Resource
                             'bold', 'italic', 'link', 'bulletList', 'orderedList',
                             'h2', 'h3', 'blockquote', 'undo', 'redo',
                         ])
+                        ->helperText('Use H2 for section headings (e.g. “What’s included…”) so the page outline is H1 → H2 → H3.')
                         ->columnSpanFull(),
                 ])->columns(2),
 
@@ -75,9 +76,30 @@ class ServiceResource extends Resource
                         ->helperText('Recommended 50–60 characters.'),
                     Forms\Components\Textarea::make('meta_description')
                         ->rows(2)
-                        ->maxLength(500)
-                        ->helperText('Recommended 140–160 characters.'),
+                        ->maxLength(160)
+                        ->helperText('Recommended 140–160 characters. Hashtags are stripped on output.'),
                 ]),
+
+            Forms\Components\Section::make('FAQ (optional)')
+                ->description('Shown below the service description. Also emitted as FAQPage structured data when populated.')
+                ->schema([
+                    Forms\Components\Repeater::make('faq')
+                        ->label('Questions')
+                        ->schema([
+                            Forms\Components\TextInput::make('question')
+                                ->required()
+                                ->maxLength(255),
+                            Forms\Components\Textarea::make('answer')
+                                ->required()
+                                ->rows(3)
+                                ->maxLength(2000),
+                        ])
+                        ->defaultItems(0)
+                        ->collapsible()
+                        ->reorderable()
+                        ->columnSpanFull(),
+                ])
+                ->collapsed(),
 
             Forms\Components\Section::make('Settings')
                 ->schema([

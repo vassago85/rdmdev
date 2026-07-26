@@ -94,19 +94,75 @@ class Project extends Model
         return $first ? asset('storage/' . $first->path) : null;
     }
 
+    /**
+     * Title with trailing location phrases stripped, so H1/meta can append
+     * the suburb once without "in Pretoria East in Pretoria East".
+     */
+    public function baseTitle(): string
+    {
+        $title = trim((string) $this->title);
+
+        if ($this->location) {
+            $title = preg_replace(
+                '/\s+in\s+' . preg_quote($this->location, '/') . '\b/i',
+                '',
+                $title
+            ) ?? $title;
+        }
+
+        $title = preg_replace('/\s+in\s+Pretoria\s+East\b/i', '', $title) ?? $title;
+
+        return trim(preg_replace('/\s{2,}/', ' ', $title) ?? $title, " \t\n\r\0\x0B,-—");
+    }
+
+    /**
+     * Human H1: "Complete Bathroom Renovation — Garsfontein, Pretoria East".
+     */
+    public function displayHeading(): string
+    {
+        $base = $this->baseTitle();
+
+        if ($this->location) {
+            return $base . ' — ' . $this->location . ', Pretoria East';
+        }
+
+        return $base . ' — Pretoria East';
+    }
+
     public function seoTitle(): string
     {
         if ($this->seo_title) {
-            return $this->seo_title;
+            return $this->seoTitleClean($this->seo_title);
         }
-        $suffix = $this->location ? " in {$this->location}, Pretoria East" : ' in Pretoria East';
-        return $this->title . $suffix . ' | RDM Developments';
+
+        return $this->displayHeading() . ' | RDM Developments';
     }
 
     public function metaDescription(): string
     {
-        return $this->meta_description
-            ?: Str::limit(strip_tags($this->description ?: ''), 155);
+        $raw = $this->meta_description
+            ?: strip_tags($this->description ?: '');
+
+        return $this->sanitizeMetaDescription($raw);
+    }
+
+    /**
+     * Strip hashtags and hard-cap at ~155 characters for SERP snippets.
+     */
+    public function sanitizeMetaDescription(string $text): string
+    {
+        $text = html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        // Remove #hashtags (and common trailing social tags).
+        $text = preg_replace('/#\S+/u', '', $text) ?? $text;
+        $text = preg_replace('/\s{2,}/u', ' ', $text) ?? $text;
+        $text = trim($text);
+
+        return Str::limit($text, 155, '…');
+    }
+
+    protected function seoTitleClean(string $title): string
+    {
+        return trim(preg_replace('/\s{2,}/', ' ', $title) ?? $title);
     }
 
     public function hasBeforeAfter(): bool

@@ -76,7 +76,10 @@ class ProjectResource extends Resource
             Forms\Components\Section::make('SEO')
                 ->schema([
                     Forms\Components\TextInput::make('seo_title')->maxLength(191),
-                    Forms\Components\Textarea::make('meta_description')->rows(2)->maxLength(500),
+                    Forms\Components\Textarea::make('meta_description')
+                        ->rows(2)
+                        ->maxLength(160)
+                        ->helperText('Keep under ~155 characters. Hashtags are stripped on output.'),
                 ]),
 
             Forms\Components\Section::make('Settings')

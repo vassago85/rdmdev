@@ -15,6 +15,8 @@ class Service extends Model
     protected $casts = [
         'is_published' => 'boolean',
         'sort_order'   => 'integer',
+        // Optional FAQ items: [['question' => '…', 'answer' => '…'], …]
+        'faq'          => 'array',
     ];
 
     protected static function booted(): void
@@ -48,12 +50,42 @@ class Service extends Model
 
     public function metaDescription(): string
     {
-        return $this->meta_description
-            ?: Str::limit(strip_tags($this->excerpt ?: $this->description ?: ''), 155);
+        $raw = $this->meta_description
+            ?: strip_tags($this->excerpt ?: $this->description ?: '');
+
+        $raw = preg_replace('/#\S+/u', '', $raw) ?? $raw;
+        $raw = trim(preg_replace('/\s{2,}/u', ' ', $raw) ?? $raw);
+
+        return Str::limit($raw, 155, '…');
     }
 
     public function heroImageUrl(): ?string
     {
         return $this->hero_image ? asset('storage/' . $this->hero_image) : null;
+    }
+
+    /**
+     * Promote bare <h3> section headings in the rich-text body to <h2>
+     * so the page outline is H1 → H2 → H3 without a skipped level.
+     * Nested headings inside lists are not used in our content.
+     */
+    public function descriptionForDisplay(): string
+    {
+        $html = (string) $this->description;
+
+        return str_replace(
+            ['<h3>', '</h3>', '<h3 ', '</H3>'],
+            ['<h2>', '</h2>', '<h2 ', '</h2>'],
+            $html
+        );
+    }
+
+    /** @return array<int, array{question: string, answer: string}> */
+    public function faqItems(): array
+    {
+        return collect($this->faq ?? [])
+            ->filter(fn ($item) => filled($item['question'] ?? null) && filled($item['answer'] ?? null))
+            ->values()
+            ->all();
     }
 }

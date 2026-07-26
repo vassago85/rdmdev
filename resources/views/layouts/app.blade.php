@@ -9,35 +9,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    {{-- Local business structured data --}}
-    <script type="application/ld+json">
-    {!! json_encode([
-        '@context' => 'https://schema.org',
-        '@type'    => 'GeneralContractor',
-        'name'     => config('rdm.name'),
-        'legalName'=> config('rdm.legal_name'),
-        'image'    => asset('images/rdmdev-logo-960.png'),
-        'url'      => url('/'),
-        'telephone'=> config('rdm.phone_tel'),
-        'email'    => config('rdm.email'),
-        'areaServed' => [
-            '@type' => 'Place',
-            'name'  => 'Pretoria East, Gauteng, South Africa',
-        ],
-        'address'  => [
-            '@type'           => 'PostalAddress',
-            'addressLocality' => 'Pretoria East',
-            'addressRegion'   => 'Gauteng',
-            'addressCountry'  => 'ZA',
-        ],
-        'founder'   => config('rdm.owner'),
-        'makesOffer'=> collect(\App\Models\Service::published()->ordered()->get(['title','slug']))->map(fn ($s) => [
-            '@type' => 'Offer',
-            'name'  => $s->title,
-            'url'   => route('services.show', $s->slug),
-        ])->values(),
-    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
-    </script>
+    @include('partials.schema')
 </head>
 <body class="min-h-screen flex flex-col bg-white text-ink-700">
 

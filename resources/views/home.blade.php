@@ -274,13 +274,26 @@
                 {{-- Intentionally stretched vertically (double height, same width)
                      — uses a direct <img> to bypass the component's aspect-locked
                      width/height HTML attrs. --}}
-                <img
-                    src="{{ asset('images/rdmdev-logo-480.png') }}"
-                    srcset="{{ asset('images/rdmdev-logo-480.png') }} 1x, {{ asset('images/rdmdev-logo-960.png') }} 2x"
-                    alt="RDM Developments — Building &amp; Renovation"
-                    class="block"
-                    style="width: 134px; height: 112px; filter: brightness(0) invert(1);"
-                />
+                <picture>
+                    <source
+                        type="image/webp"
+                        srcset="{{ asset('images/rdmdev-logo-128.webp') }} 128w, {{ asset('images/rdmdev-logo-256.webp') }} 256w"
+                        sizes="134px"
+                    >
+                    <img
+                        src="{{ asset('images/rdmdev-logo-128.png') }}"
+                        srcset="{{ asset('images/rdmdev-logo-128.png') }} 128w, {{ asset('images/rdmdev-logo-256.png') }} 256w"
+                        sizes="134px"
+                        alt="RDM Developments — Building &amp; Renovation"
+                        width="134"
+                        height="56"
+                        loading="eager"
+                        fetchpriority="high"
+                        decoding="async"
+                        class="block"
+                        style="width: 134px; height: auto; filter: brightness(0) invert(1);"
+                    />
+                </picture>
                 <div>
                     <p class="text-5xl sm:text-6xl font-display font-bold tracking-tight">Pretoria East</p>
                     <p class="mt-2 text-brand-100">Garsfontein · Faerie Glen · Moreleta Park · Woodhill · Silver Lakes · Olympus</p>

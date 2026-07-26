@@ -1,8 +1,19 @@
 @php
     $title       = $pageTitle      ?? (config('rdm.name') . ' — ' . config('rdm.tagline'));
     $description = $metaDescription ?? 'Owner-managed builder and renovation specialist in Pretoria East. Personally supervised by Ruben Metcalfe.';
-    $canonical   = url()->current();
-    $ogImage     = $ogImage ?? asset('images/rdmdev-logo-960.png');
+    // Cap + strip hashtags at the layout layer so every page stays SERP-safe
+    // even if a controller/meta field is long or has social tags.
+    $description = \Illuminate\Support\Str::limit(
+        trim(preg_replace('/\s{2,}/u', ' ', preg_replace('/#\S+/u', '', strip_tags($description)) ?? '') ?? ''),
+        155,
+        '…'
+    );
+    // Keep homepage canonical + sitemap <loc> aligned (trailing slash).
+    $canonical = url()->current();
+    if (rtrim($canonical, '/') === rtrim(config('app.url'), '/')) {
+        $canonical = rtrim(config('app.url'), '/') . '/';
+    }
+    $ogImage = $ogImage ?? asset('images/rdmdev-logo-960.png');
 @endphp
 <title>{{ $title }}</title>
 <meta name="description" content="{{ $description }}">

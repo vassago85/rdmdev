@@ -2,15 +2,17 @@
 
 @section('content')
 
+@php
+    $crumbs = [
+        ['name' => 'Home', 'url' => route('home')],
+        ['name' => 'Services', 'url' => route('services.index')],
+        ['name' => $service->title],
+    ];
+@endphp
+
 <section class="bg-ink-800 text-white">
     <div class="container py-14 sm:py-20">
-        <nav class="text-sm text-ink-200 mb-5" aria-label="Breadcrumb">
-            <a href="{{ route('home') }}" class="hover:text-white">Home</a>
-            <span class="mx-1.5 text-ink-400">/</span>
-            <a href="{{ route('services.index') }}" class="hover:text-white">Services</a>
-            <span class="mx-1.5 text-ink-400">/</span>
-            <span class="text-white">{{ $service->title }}</span>
-        </nav>
+        <x-breadcrumbs :items="$crumbs" tone="dark" />
 
         <p class="eyebrow !text-brand-200">Service · Pretoria East</p>
         <h1 class="!text-white mt-3 max-w-3xl">{{ $service->title }}</h1>
@@ -39,12 +41,12 @@
 <section class="section">
     <div class="container grid gap-10 lg:grid-cols-[1.5fr_1fr]">
         <article class="prose-rdm">
-            {!! $service->description !!}
+            {!! $service->descriptionForDisplay() !!}
         </article>
 
         <aside class="space-y-6">
             <div class="card p-6">
-                <h3 class="!text-lg mb-4">Why homeowners choose RDM</h3>
+                <h2 class="!text-lg mb-4">Why homeowners choose RDM</h2>
                 <ul class="space-y-3 text-ink-700">
                     <li class="flex gap-3 items-start">
                         <x-lucide name="shield-check" class="h-5 w-5 mt-0.5 text-brand-600 flex-shrink-0" />
@@ -66,7 +68,7 @@
             </div>
 
             <div class="card p-6 bg-brand-50 border-brand-100">
-                <h3 class="!text-lg mb-2">Call {{ config('rdm.owner') }} directly</h3>
+                <h2 class="!text-lg mb-2">Call {{ config('rdm.owner') }} directly</h2>
                 <p class="text-ink-600 mb-4">Quickest way to get a quote for your {{ \Illuminate\Support\Str::lower($service->title) }}.</p>
                 <div class="flex flex-wrap gap-2">
                     <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-md bg-brand text-white hover:bg-brand-600">
@@ -83,6 +85,8 @@
         </aside>
     </div>
 </section>
+
+<x-faq-section :items="$service->faqItems()" class="bg-ink-50/60 border-y border-ink-100" />
 
 <section class="section-tight bg-ink-50/60 border-y border-ink-100" id="enquiry">
     <div class="container max-w-3xl">
