@@ -33,7 +33,10 @@ class EnquiryStatsWidget extends BaseWidget
             : sprintf('%s%d vs last week', $delta > 0 ? '+' : '', $delta);
 
         $unread = Enquiry::unread()->count();
-        $thisMonth = Enquiry::where('created_at', '>=', $now->copy()->startOfMonth())->count();
+        $openLeads = Enquiry::open()->count();
+        $followUpsDue = Enquiry::whereNotNull('follow_up_at')
+            ->whereDate('follow_up_at', '<=', $now->toDateString())
+            ->count();
 
         $servicesLive = Service::where('is_published', true)->count();
         $servicesDraft = Service::where('is_published', false)->count();
@@ -47,14 +50,19 @@ class EnquiryStatsWidget extends BaseWidget
                 ->color($trendColor),
 
             Stat::make('Unactioned enquiries', $unread)
-                ->description($unread > 0 ? 'Need a response' : 'All caught up')
+                ->description($unread > 0 ? 'Unread — need a response' : 'All caught up')
                 ->descriptionIcon($unread > 0 ? 'heroicon-m-envelope' : 'heroicon-m-check-circle')
                 ->color($unread > 0 ? 'warning' : 'success'),
 
-            Stat::make('Enquiries this month', $thisMonth)
-                ->description('Since ' . $now->copy()->startOfMonth()->format('j M'))
-                ->descriptionIcon('heroicon-m-calendar-days')
-                ->color('primary'),
+            Stat::make('Open leads', $openLeads)
+                ->description('New, contacted or quoted')
+                ->descriptionIcon('heroicon-m-fire')
+                ->color($openLeads > 0 ? 'primary' : 'gray'),
+
+            Stat::make('Follow-ups due', $followUpsDue)
+                ->description($followUpsDue > 0 ? 'Scheduled for today or overdue' : 'Nothing scheduled')
+                ->descriptionIcon('heroicon-m-clock')
+                ->color($followUpsDue > 0 ? 'danger' : 'gray'),
 
             Stat::make('Services', "{$servicesLive} live")
                 ->description("{$servicesDraft} draft")

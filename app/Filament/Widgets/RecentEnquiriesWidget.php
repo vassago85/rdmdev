@@ -37,6 +37,7 @@ class RecentEnquiriesWidget extends BaseWidget
                     ->icon('heroicon-m-phone'),
                 Tables\Columns\TextColumn::make('service_type')->label('Service')->toggleable(),
                 Tables\Columns\TextColumn::make('suburb')->toggleable(),
+                Tables\Columns\TextColumn::make('status')->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Received')
                     ->since()

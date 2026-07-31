@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms;
@@ -24,6 +25,11 @@ class UserResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    public static function canAccess(): bool
+    {
+        return Auth::user()?->isAdmin() ?? false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -37,6 +43,14 @@ class UserResource extends Resource
                         ->required()
                         ->unique(ignoreRecord: true)
                         ->maxLength(191),
+                    Forms\Components\Select::make('role')
+                        ->options(UserRole::class)
+                        ->default(UserRole::Admin)
+                        ->required()
+                        ->native(false)
+                        ->helperText(fn (?string $state): string => $state
+                            ? (UserRole::tryFrom($state)?->description() ?? '')
+                            : 'Administrators have full access; editors cannot delete records or manage users.'),
                 ])->columns(2),
 
             Forms\Components\Section::make('Password')
@@ -69,6 +83,7 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')->searchable()->sortable(),
                 Tables\Columns\TextColumn::make('email')->searchable()->sortable()->copyable(),
+                Tables\Columns\TextColumn::make('role')->badge()->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime('d M Y')

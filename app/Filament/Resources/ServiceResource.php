@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class ServiceResource extends Resource
@@ -43,9 +44,22 @@ class ServiceResource extends Resource
                     Forms\Components\TextInput::make('tagline')
                         ->maxLength(191)
                         ->helperText('Short one-liner shown under the title.'),
-                    Forms\Components\TextInput::make('icon')
-                        ->maxLength(60)
-                        ->helperText('Icon key (optional).'),
+                    Forms\Components\Select::make('icon')
+                        ->options([
+                            'hammer'       => 'Hammer — building / construction',
+                            'bath'         => 'Bath — bathrooms',
+                            'grid'         => 'Grid — tiling',
+                            'droplet'      => 'Droplet — waterproofing',
+                            'paintbrush'   => 'Paintbrush — painting',
+                            'house'        => 'House — renovations',
+                            'layers'       => 'Layers — custom / other',
+                            'construction' => 'Construction',
+                            'file-text'    => 'Document',
+                        ])
+                        ->searchable()
+                        ->native(false)
+                        ->placeholder('Choose an icon')
+                        ->helperText('Shown on the service card. Pick from the supported set to avoid broken icons.'),
                     Forms\Components\Textarea::make('excerpt')
                         ->rows(3)
                         ->maxLength(500)
@@ -128,11 +142,13 @@ class ServiceResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => Auth::user()?->isAdmin() ?? false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => Auth::user()?->isAdmin() ?? false),
                 ]),
             ]);
     }
