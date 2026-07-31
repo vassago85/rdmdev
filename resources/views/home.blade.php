@@ -262,29 +262,21 @@
         </div>
 
         <div class="relative">
-            <div class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 shadow-card p-8 text-white flex flex-col justify-between">
-                <picture>
-                    <source
-                        type="image/webp"
-                        srcset="{{ asset('images/rdmdev-logo-128.webp') }} 128w, {{ asset('images/rdmdev-logo-256.webp') }} 256w"
-                        sizes="134px"
-                    >
-                    <img
-                        src="{{ asset('images/rdmdev-logo-128.png') }}"
-                        srcset="{{ asset('images/rdmdev-logo-128.png') }} 128w, {{ asset('images/rdmdev-logo-256.png') }} 256w"
-                        sizes="134px"
-                        alt="RDM Developments — Building &amp; Renovation"
-                        width="134"
-                        height="56"
-                        loading="lazy"
-                        decoding="async"
-                        class="block"
-                        style="width: 134px; height: auto; filter: brightness(0) invert(1);"
-                    />
-                </picture>
-                <div>
-                    <p class="text-5xl sm:text-6xl font-display font-bold tracking-tight">Pretoria East</p>
-                    <p class="mt-2 text-brand-100">Garsfontein · Faerie Glen · Moreleta Park · Woodhill · Silver Lakes · Olympus</p>
+            <div class="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-card">
+                <img
+                    src="{{ asset('images/ruben-metcalfe.jpg') }}"
+                    alt="{{ config('rdm.owner') }} — owner of {{ config('rdm.name') }}"
+                    width="768"
+                    height="1024"
+                    loading="lazy"
+                    decoding="async"
+                    class="absolute inset-0 h-full w-full object-cover object-top"
+                />
+                {{-- Dark gradient so the branding stays legible over the photo --}}
+                <div class="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/25 to-transparent"></div>
+                <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8 text-white">
+                    <p class="text-4xl sm:text-5xl font-display font-bold tracking-tight">Pretoria East</p>
+                    <p class="mt-2 text-sm text-brand-100">Garsfontein · Faerie Glen · Moreleta Park · Woodhill · Silver Lakes · Olympus</p>
                 </div>
             </div>
         </div>
