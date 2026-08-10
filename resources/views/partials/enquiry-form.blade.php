@@ -18,7 +18,7 @@
         <a class="link-underline" href="tel:{{ config('rdm.phone_tel') }}">{{ config('rdm.phone') }}</a>.
     </p>
 
-    <form action="{{ route('enquiries.store') }}" method="POST" class="grid gap-4 {{ $compact ? '' : 'sm:grid-cols-2' }}">
+    <form action="{{ route('enquiries.store') }}" method="POST" enctype="multipart/form-data" class="grid gap-4 {{ $compact ? '' : 'sm:grid-cols-2' }}">
         @csrf
         <input type="hidden" name="source" value="{{ $source }}">
 
@@ -66,6 +66,28 @@
             <label for="f_message" class="label">Project details</label>
             <textarea id="f_message" name="message" rows="5" required class="input" placeholder="Tell us about your project…">{{ old('message') }}</textarea>
             @error('message') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+        </div>
+
+        <div class="{{ $compact ? '' : 'sm:col-span-2' }}"
+             x-data="{ files: [] }">
+            <label for="f_photos" class="label">Photos (optional)</label>
+            <label for="f_photos"
+                   class="flex items-center gap-3 rounded-md border-2 border-dashed border-ink-200 bg-ink-50/50 px-4 py-3 cursor-pointer transition hover:border-brand-300 hover:bg-brand-50/40">
+                <span class="inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                    <x-lucide name="camera" class="h-5 w-5" />
+                </span>
+                <span class="text-sm text-ink-600">
+                    <span x-show="files.length === 0">Snap or attach a photo of the job — a leaking roof, a tired bathroom, the space to build.</span>
+                    <span x-show="files.length > 0" x-cloak class="font-semibold text-ink-800"
+                          x-text="files.length + (files.length === 1 ? ' photo attached' : ' photos attached')"></span>
+                </span>
+            </label>
+            <input type="file" id="f_photos" name="photos[]" multiple accept="image/*"
+                   class="sr-only"
+                   x-on:change="files = Array.from($event.target.files).map(f => f.name)">
+            <p class="text-xs text-ink-400 mt-1.5">Up to 5 images · JPG, PNG, WEBP or HEIC · max 8MB each.</p>
+            @error('photos') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+            @error('photos.*') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
         </div>
 
         <div class="{{ $compact ? '' : 'sm:col-span-2' }} flex flex-col sm:flex-row sm:items-center gap-3 pt-2">

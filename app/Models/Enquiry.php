@@ -20,7 +20,16 @@ class Enquiry extends Model
         'read_at'      => 'datetime',
         'follow_up_at' => 'date',
         'status'       => EnquiryStatus::class,
+        'photos'       => 'array',
     ];
+
+    /** Public URLs for any attached photos. */
+    public function photoUrls(): array
+    {
+        return collect($this->photos ?? [])
+            ->map(fn (string $path) => asset('storage/' . $path))
+            ->all();
+    }
 
     public function markRead(): void
     {

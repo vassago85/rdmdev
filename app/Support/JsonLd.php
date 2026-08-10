@@ -74,10 +74,19 @@ class JsonLd
             $entity['sameAs'] = $sameAs;
         }
 
-        // Slot for future reviews — leave absent until real AggregateRating data exists.
-        // When ready, set:
-        //   $entity['aggregateRating'] = ['@type' => 'AggregateRating', 'ratingValue' => …, 'reviewCount' => …];
-        //   $entity['review'] = [ … Review objects … ];
+        // AggregateRating — emitted only when real Google numbers are configured.
+        // Never fabricate a rating: Google penalises invented review markup.
+        $rating = config('rdm.google.rating');
+        $count  = config('rdm.google.review_count');
+        if (filled($rating) && filled($count)) {
+            $entity['aggregateRating'] = [
+                '@type'       => 'AggregateRating',
+                'ratingValue' => (string) $rating,
+                'reviewCount' => (string) $count,
+                'bestRating'  => '5',
+                'worstRating' => '1',
+            ];
+        }
 
         return $entity;
     }

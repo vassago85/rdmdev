@@ -12,9 +12,10 @@ class ContactController extends Controller
 {
     public function store(StoreEnquiryRequest $request, NtfyService $ntfy)
     {
-        $data = $request->safe()->except('website');
+        $data = $request->safe()->except('website', 'photos');
         $data['ip_address'] = $request->ip();
         $data['user_agent'] = substr((string) $request->userAgent(), 0, 500);
+        $data['photos']     = $this->storePhotos($request);
 
         $enquiry = Enquiry::create($data);
 
@@ -47,6 +48,28 @@ class ContactController extends Controller
             ->with('enquiry.success', "Thanks {$enquiry->name} — we've received your message and will be in touch shortly.");
     }
 
+    /**
+     * Persist any uploaded job photos to the public disk and return their
+     * relative paths. Returns null when nothing was attached.
+     *
+     * @return array<int, string>|null
+     */
+    protected function storePhotos(StoreEnquiryRequest $request): ?array
+    {
+        if (! $request->hasFile('photos')) {
+            return null;
+        }
+
+        $paths = [];
+        foreach ($request->file('photos') as $photo) {
+            if ($photo && $photo->isValid()) {
+                $paths[] = $photo->store('enquiries/' . now()->format('Y/m'), 'public');
+            }
+        }
+
+        return $paths ?: null;
+    }
+
     protected function buildNtfyMessage(Enquiry $enquiry): string
     {
         $lines = [
@@ -61,6 +84,9 @@ class ContactController extends Controller
         }
         if ($enquiry->suburb) {
             $lines[] = 'Suburb: ' . $enquiry->suburb;
+        }
+        if ($count = count($enquiry->photos ?? [])) {
+            $lines[] = 'Photos: ' . $count . ' attached';
         }
 
         $lines[] = '';

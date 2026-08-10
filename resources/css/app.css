@@ -60,8 +60,9 @@
     .input { @apply block w-full rounded-md border-ink-200 shadow-sm focus:border-brand-500 focus:ring-brand-500 text-ink-800 placeholder:text-ink-300; }
     .label { @apply block text-sm font-semibold text-ink-700 mb-1.5; }
 
-    /* Clearance so the floating WhatsApp control never covers CTAs / footer links. */
+    /* Clearance so the sticky mobile action bar (below lg) and the desktop
+       floating WhatsApp control (lg+) never cover CTAs / footer links. */
     .whatsapp-safe {
-        @apply pb-24 sm:pb-20;
+        @apply pb-24 lg:pb-20;
     }
 }

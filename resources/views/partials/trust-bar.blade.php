@@ -2,6 +2,12 @@
 <section class="border-y border-ink-100 bg-white">
     <div class="container py-4 sm:py-5">
         <ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-semibold text-ink-700">
+            @if (filled(config('rdm.google.rating')) && filled(config('rdm.google.review_count')))
+                <li class="inline-flex items-center">
+                    @include('partials.google-rating')
+                </li>
+                <li class="hidden sm:block h-4 w-px bg-ink-200" aria-hidden="true"></li>
+            @endif
             <li class="inline-flex items-center gap-2">
                 <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-600">
                     <x-lucide name="shield-check" class="h-4 w-4" />

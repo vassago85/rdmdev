@@ -5,9 +5,11 @@ namespace App\Mail;
 use App\Models\Enquiry;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class EnquiryReceived extends Mailable
 {
@@ -40,6 +42,9 @@ class EnquiryReceived extends Mailable
 
     public function attachments(): array
     {
-        return [];
+        return collect($this->enquiry->photos ?? [])
+            ->filter(fn (string $path) => Storage::disk('public')->exists($path))
+            ->map(fn (string $path) => Attachment::fromStorageDisk('public', $path))
+            ->all();
     }
 }

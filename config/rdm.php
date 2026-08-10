@@ -28,6 +28,24 @@ return [
         'instagram'       => env('RDM_INSTAGRAM_URL'), // TODO: Instagram profile URL
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Google reviews (real social proof)
+    |--------------------------------------------------------------------------
+    |
+    | Drives the "4.9 ★ from 30 reviews" badge and schema.org AggregateRating.
+    | Leave rating OR review_count null and the badge + rich-result markup are
+    | hidden entirely — never publish an invented rating. Pull the real numbers
+    | from the Google Business Profile and set them here (or via env).
+    |
+    */
+    'google' => [
+        'rating'       => env('RDM_GOOGLE_RATING'),        // e.g. 4.9  (TODO: real value)
+        'review_count' => env('RDM_GOOGLE_REVIEW_COUNT'),  // e.g. 30   (TODO: real value)
+        // Direct "write a review" / profile link. Falls back to social.google_business.
+        'reviews_url'  => env('RDM_GOOGLE_REVIEWS_URL'),
+    ],
+
     // LocalBusiness geo — Pretoria East centroid placeholders. Replace with
     // the pin from your Google Business Profile before claiming rich results.
     'geo' => [

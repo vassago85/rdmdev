@@ -22,5 +22,6 @@
 
     @include('partials.footer')
     @include('partials.floating-whatsapp')
+    @include('partials.sticky-cta')
 </body>
 </html>

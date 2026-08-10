@@ -22,7 +22,10 @@
             {{-- Ruben contact card --}}
             <div class="card p-6 sm:p-7">
                 <div class="flex items-center gap-3 mb-5">
-                    <div class="h-12 w-12 rounded-full bg-brand-600 text-white grid place-items-center font-bold text-lg">RM</div>
+                    <img src="{{ asset('images/ruben-metcalfe.jpg') }}"
+                         alt="{{ config('rdm.owner') }}, owner of {{ config('rdm.name') }}"
+                         width="48" height="48" loading="lazy" decoding="async"
+                         class="h-12 w-12 rounded-full object-cover object-top ring-2 ring-brand-200">
                     <div>
                         <p class="font-semibold text-ink-800 leading-tight text-lg">{{ config('rdm.owner') }}</p>
                         <p class="text-sm text-ink-500">Owner · RDM Developments</p>

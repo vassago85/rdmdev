@@ -185,4 +185,23 @@ class Project extends Model
     {
         return $this->beforeImages()->exists() && $this->afterImages()->exists();
     }
+
+    /**
+     * First image of a given type, preferring the eager-loaded `images`
+     * relation so project-card grids don't fire an extra query per card.
+     */
+    public function firstImageOfType(string $type): ?ProjectImage
+    {
+        if ($this->relationLoaded('images')) {
+            return $this->images->firstWhere('type', $type);
+        }
+
+        return $this->images()->where('type', $type)->first();
+    }
+
+    /** N+1-safe variant of hasBeforeAfter() for card grids. */
+    public function cardHasBeforeAfter(): bool
+    {
+        return $this->firstImageOfType('before') && $this->firstImageOfType('after');
+    }
 }

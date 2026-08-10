@@ -50,6 +50,16 @@ class EnquiryResource extends Resource
                     Forms\Components\TextInput::make('source')
                         ->helperText('Where the enquiry came from (e.g. home_cta).'),
                     Forms\Components\Textarea::make('message')->rows(6)->required()->columnSpanFull(),
+                    Forms\Components\FileUpload::make('photos')
+                        ->label('Attached photos')
+                        ->image()
+                        ->multiple()
+                        ->disk('public')
+                        ->directory('enquiries/' . now()->format('Y/m'))
+                        ->openable()
+                        ->downloadable()
+                        ->reorderable()
+                        ->columnSpanFull(),
                 ])->columns(2),
 
             Forms\Components\Section::make('Lead management')
@@ -114,6 +124,13 @@ class EnquiryResource extends Resource
                     Infolists\Components\TextEntry::make('suburb')->placeholder('—'),
                     Infolists\Components\TextEntry::make('source')->placeholder('—'),
                     Infolists\Components\TextEntry::make('message')->columnSpanFull()->markdown(),
+                    Infolists\Components\ImageEntry::make('photos')
+                        ->label('Attached photos')
+                        ->disk('public')
+                        ->height(140)
+                        ->square()
+                        ->columnSpanFull()
+                        ->visible(fn (Enquiry $record) => filled($record->photos)),
                     Infolists\Components\TextEntry::make('notes')
                         ->label('Internal notes')->columnSpanFull()->placeholder('No notes yet.'),
                     Infolists\Components\TextEntry::make('created_at')->dateTime('d M Y H:i'),

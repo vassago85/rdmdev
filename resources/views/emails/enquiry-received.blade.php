@@ -13,6 +13,8 @@ You have a new enquiry from the RDM Developments website.
 @endif
 @if ($enquiry->source)**Source:** {{ $enquiry->source }}
 @endif
+@if ($count = count($enquiry->photos ?? []))**Photos:** {{ $count }} attached to this email
+@endif
 
 **Message:**
 

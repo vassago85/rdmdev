@@ -38,11 +38,11 @@
     <div class="container relative grid gap-8 lg:gap-10 py-12 sm:py-14 lg:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center">
         <div>
             <p class="eyebrow !text-brand-200">Pretoria East · Gauteng</p>
-            <h1 class="!text-white mt-3">Reliable Building &amp; Renovation Contractors in Pretoria&nbsp;East</h1>
+            <h1 class="!text-white mt-3">Renovations &amp; builds in Pretoria&nbsp;East, run personally by the owner</h1>
             <p class="mt-4 text-base sm:text-lg text-ink-100 max-w-xl leading-relaxed">
-                {{ config('rdm.name') }} is an owner-managed construction business run by
-                {{ config('rdm.owner') }}. Small team, clear communication, and proper finishes —
-                building, bathrooms, tiling, waterproofing and painting.
+                Clear quotes, clean sites and proper finishes. {{ config('rdm.owner') }} personally
+                quotes and runs every job — bathrooms, tiling, waterproofing, painting and building.
+                You deal with him directly, start to finish.
             </p>
 
             <div class="mt-6 flex flex-wrap gap-3">
@@ -67,7 +67,10 @@
         <div class="lg:pl-4">
             <div class="bg-ink-900/55 backdrop-blur-md border border-white/15 rounded-2xl p-5 sm:p-6 shadow-2xl">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="h-11 w-11 rounded-full bg-brand-500 text-white grid place-items-center font-bold text-lg">RM</div>
+                    <img src="{{ asset('images/ruben-metcalfe.jpg') }}"
+                         alt="{{ config('rdm.owner') }}, owner of {{ config('rdm.name') }}"
+                         width="48" height="48" loading="eager" decoding="async"
+                         class="h-12 w-12 rounded-full object-cover object-top ring-2 ring-brand-400/60">
                     <div>
                         <p class="font-semibold text-white leading-tight">{{ config('rdm.owner') }}</p>
                         <p class="text-sm text-ink-200">Owner · RDM Developments</p>
