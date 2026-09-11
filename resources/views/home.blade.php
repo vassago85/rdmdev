@@ -3,10 +3,7 @@
 @section('content')
 
 @php
-    // PLACEHOLDER: drop public/images/hero-home.jpg (or .webp / .png) to replace the gradient.
-    $heroFile = collect(['hero-home.webp', 'hero-home.jpg', 'hero-home.png'])
-        ->first(fn ($file) => file_exists(public_path('images/' . $file)));
-    $heroUrl = $heroFile ? asset('images/' . $heroFile) : null;
+    $heroUrl = $about->homeHeroImageUrl();
     $featuredCount = $featuredProjects->count();
 @endphp
 
@@ -37,13 +34,13 @@
 
     <div class="container relative grid gap-8 lg:gap-10 py-12 sm:py-14 lg:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center">
         <div>
-            <p class="eyebrow !text-brand-200">Pretoria East · Gauteng</p>
-            <h1 class="!text-white mt-3">Renovations &amp; builds in Pretoria&nbsp;East, run personally by the owner</h1>
-            <p class="mt-4 text-base sm:text-lg text-ink-100 max-w-xl leading-relaxed">
-                Clear quotes, clean sites and proper finishes. {{ config('rdm.owner') }} personally
-                quotes and runs every job — bathrooms, tiling, waterproofing, painting and building.
-                You deal with him directly, start to finish.
-            </p>
+            @if ($about->home_eyebrow)
+                <p class="eyebrow !text-brand-200">{{ $about->home_eyebrow }}</p>
+            @endif
+            <h1 class="!text-white mt-3">{{ $about->home_heading }}</h1>
+            @if ($about->home_intro)
+                <p class="mt-4 text-base sm:text-lg text-ink-100 max-w-xl leading-relaxed">{{ $about->home_intro }}</p>
+            @endif
 
             <div class="mt-6 flex flex-wrap gap-3">
                 <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-lg bg-white text-brand-700 hover:bg-brand-50">
@@ -67,33 +64,31 @@
         <div class="lg:pl-4">
             <div class="bg-ink-900/55 backdrop-blur-md border border-white/15 rounded-2xl p-5 sm:p-6 shadow-2xl">
                 <div class="flex items-center gap-3 mb-4">
-                    <img src="{{ asset('images/ruben-metcalfe.jpg') }}"
-                         alt="{{ config('rdm.owner') }}, owner of {{ config('rdm.name') }}"
+                    <img src="{{ $leadMember?->photoUrl(asset('images/ruben-metcalfe.jpg')) ?? asset('images/ruben-metcalfe.jpg') }}"
+                         alt="{{ $leadMember?->name ?? config('rdm.owner') }}, owner of {{ config('rdm.name') }}"
                          width="48" height="48" loading="eager" decoding="async"
                          class="h-12 w-12 rounded-full object-cover object-top ring-2 ring-brand-400/60">
                     <div>
-                        <p class="font-semibold text-white leading-tight">{{ config('rdm.owner') }}</p>
-                        <p class="text-sm text-ink-200">Owner · RDM Developments</p>
+                        <p class="font-semibold text-white leading-tight">{{ $leadMember?->name ?? config('rdm.owner') }}</p>
+                        <p class="text-sm text-ink-200">{{ $about->home_owner_role ?: 'Owner · RDM Developments' }}</p>
                     </div>
                 </div>
-                <p class="text-ink-100 leading-relaxed italic text-[15px]">
-                    "Every project I quote, I run. No middlemen, no surprises — just good work, on time, on budget."
-                </p>
+                @if ($about->home_owner_quote)
+                    <p class="text-ink-100 leading-relaxed italic text-[15px]">
+                        “{{ $about->home_owner_quote }}”
+                    </p>
+                @endif
 
-                <ul class="mt-4 space-y-2 text-sm text-ink-100">
-                    <li class="flex items-center gap-2">
-                        <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
-                        Owner on every project
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
-                        Pretoria East focused
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
-                        NHBRC-registered home builder
-                    </li>
-                </ul>
+                @if (count($about->homeOwnerBullets()))
+                    <ul class="mt-4 space-y-2 text-sm text-ink-100">
+                        @foreach ($about->homeOwnerBullets() as $bullet)
+                            <li class="flex items-center gap-2">
+                                <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
+                                {{ $bullet }}
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
 
                 <div class="mt-5 flex flex-col gap-2">
                     <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-md bg-brand-500 text-white hover:bg-brand-400">
@@ -118,9 +113,13 @@
     <div class="container">
         <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div class="max-w-2xl">
-                <p class="eyebrow">Recent work</p>
-                <h2 class="mt-2">Featured projects</h2>
-                <p class="mt-3 text-ink-500 leading-relaxed">A selection of the renovations and builds we've completed across Pretoria East.</p>
+                @if ($about->projects_eyebrow)
+                    <p class="eyebrow">{{ $about->projects_eyebrow }}</p>
+                @endif
+                <h2 class="mt-2">{{ $about->projects_heading ?: 'Featured projects' }}</h2>
+                @if ($about->projects_intro)
+                    <p class="mt-3 text-ink-500 leading-relaxed">{{ $about->projects_intro }}</p>
+                @endif
             </div>
             <a href="{{ route('projects.index') }}" class="btn-ghost !text-base inline-flex items-center gap-1.5 shrink-0">
                 View all projects
@@ -147,13 +146,13 @@
     <div class="container">
         <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
             <div class="max-w-2xl">
-                <p class="eyebrow">What we do</p>
-                <h2 class="mt-2">Services across Pretoria East</h2>
-                <p class="mt-3 text-lg text-ink-500 leading-relaxed">
-                    From bathroom renovations and tiling to building, waterproofing and painting —
-                    every service is personally supervised by {{ config('rdm.owner') }}, from the first
-                    quote to the final clean-up.
-                </p>
+                @if ($about->services_eyebrow)
+                    <p class="eyebrow">{{ $about->services_eyebrow }}</p>
+                @endif
+                <h2 class="mt-2">{{ $about->services_heading ?: 'Services across Pretoria East' }}</h2>
+                @if ($about->services_intro)
+                    <p class="mt-3 text-lg text-ink-500 leading-relaxed">{{ $about->services_intro }}</p>
+                @endif
             </div>
             <a href="{{ route('services.index') }}" class="btn-ghost !text-base inline-flex items-center gap-1.5 shrink-0">
                 All services
@@ -167,10 +166,9 @@
             @endforeach
         </div>
 
-        <p class="mt-10 max-w-2xl text-sm text-ink-500 leading-relaxed">
-            We do not offer electrical work. Where a project requires it, the client
-            appoints their own registered electrician.
-        </p>
+        @if ($about->services_disclaimer)
+            <p class="mt-10 max-w-2xl text-sm text-ink-500 leading-relaxed">{{ $about->services_disclaimer }}</p>
+        @endif
     </div>
 </section>
 
@@ -178,24 +176,17 @@
 <section class="section">
     <div class="container">
         <div class="max-w-2xl mx-auto text-center lg:max-w-none lg:text-left lg:mx-0">
-            <p class="eyebrow">Why RDM</p>
-            <h2 class="mt-2">A small, focused team — and it shows in the finish</h2>
-            <p class="mt-3 text-lg text-ink-500 leading-relaxed max-w-2xl lg:mx-0 mx-auto">
-                The difference between a good renovation and a frustrating one is almost always
-                the person running it. Here's what working with us looks like.
-            </p>
+            @if ($about->why_eyebrow)
+                <p class="eyebrow">{{ $about->why_eyebrow }}</p>
+            @endif
+            <h2 class="mt-2">{{ $about->why_heading ?: 'Why homeowners choose RDM' }}</h2>
+            @if ($about->why_intro)
+                <p class="mt-3 text-lg text-ink-500 leading-relaxed max-w-2xl lg:mx-0 mx-auto">{{ $about->why_intro }}</p>
+            @endif
         </div>
 
         <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            @php
-                $why = [
-                    ['icon' => 'users',          'title' => 'Small, focused team',      'body' => 'We stay deliberately small so every project gets real attention — no call centre, no juggling twenty sites at once.'],
-                    ['icon' => 'shield-check',   'title' => 'Personally supervised',    'body' => 'Ruben is on-site and responsible for the work — the person who quoted your job is the person who runs it.'],
-                    ['icon' => 'message-circle', 'title' => 'Reliable communication',   'body' => 'Straight answers on WhatsApp or the phone. You always know where the project is and what happens next.'],
-                    ['icon' => 'sparkles',       'title' => 'Clean, well-finished',     'body' => 'Tidy sites, careful tradesmen, and the kind of finish you only get when someone is paying attention to the details.'],
-                ];
-            @endphp
-            @foreach ($why as $item)
+            @foreach ($about->whyItems() as $item)
                 <div class="card-interactive p-6">
                     <div class="inline-flex items-center justify-center h-11 w-11 rounded-lg bg-brand-50 text-brand-600 mb-4">
                         <x-lucide :name="$item['icon']" class="h-6 w-6" stroke="1.8" />
@@ -214,12 +205,13 @@
 <section class="section bg-ink-50/60 border-y border-ink-100">
     <div class="container">
         <div class="max-w-2xl mx-auto text-center">
-            <p class="eyebrow">Where we work</p>
-            <h2 class="mt-2">Areas we serve in Pretoria East</h2>
-            <p class="mt-3 text-lg text-ink-500 leading-relaxed">
-                We focus on Pretoria East so we can be on-site fast and stay properly involved
-                with every project — not stretched thin across the whole of Gauteng.
-            </p>
+            @if ($about->areas_eyebrow)
+                <p class="eyebrow">{{ $about->areas_eyebrow }}</p>
+            @endif
+            <h2 class="mt-2">{{ $about->areas_heading ?: 'Areas we serve in Pretoria East' }}</h2>
+            @if ($about->areas_intro)
+                <p class="mt-3 text-lg text-ink-500 leading-relaxed">{{ $about->areas_intro }}</p>
+            @endif
         </div>
 
         <div class="mt-10 flex flex-wrap justify-center gap-2.5 sm:gap-3">
@@ -237,29 +229,25 @@
 <section class="section">
     <div class="container grid gap-10 lg:grid-cols-2 lg:items-center">
         <div>
-            <p class="eyebrow">About RDM</p>
-            <h2 class="mt-2">Small, owner-managed, personally supervised</h2>
-            <p class="mt-5 text-lg text-ink-500 leading-relaxed">
-                {{ config('rdm.name') }} is a Pretoria East–based construction and renovation business
-                owned and operated by {{ config('rdm.owner') }}. We stay small on purpose — it's the
-                only way to make sure every project is properly supervised and properly finished.
-            </p>
-            <ul class="mt-6 space-y-3 text-ink-700">
-                <li class="flex gap-3 items-start">
-                    <x-lucide name="check-circle-2" class="h-5 w-5 mt-0.5 text-brand-600 flex-shrink-0" />
-                    <span>No sub-contracting of project management — Ruben runs every job.</span>
-                </li>
-                <li class="flex gap-3 items-start">
-                    <x-lucide name="check-circle-2" class="h-5 w-5 mt-0.5 text-brand-600 flex-shrink-0" />
-                    <span>Focused on Pretoria East so we can be on-site fast.</span>
-                </li>
-                <li class="flex gap-3 items-start">
-                    <x-lucide name="check-circle-2" class="h-5 w-5 mt-0.5 text-brand-600 flex-shrink-0" />
-                    <span>Clear quotes, honest timelines, tidy sites.</span>
-                </li>
-            </ul>
+            @if ($about->home_about_eyebrow)
+                <p class="eyebrow">{{ $about->home_about_eyebrow }}</p>
+            @endif
+            <h2 class="mt-2">{{ $about->home_about_heading }}</h2>
+            @if ($about->home_about_intro)
+                <p class="mt-5 text-lg text-ink-500 leading-relaxed">{{ $about->home_about_intro }}</p>
+            @endif
+            @if (count($about->homeAboutBullets()))
+                <ul class="mt-6 space-y-3 text-ink-700">
+                    @foreach ($about->homeAboutBullets() as $bullet)
+                        <li class="flex gap-3 items-start">
+                            <x-lucide name="check-circle-2" class="h-5 w-5 mt-0.5 text-brand-600 flex-shrink-0" />
+                            <span>{{ $bullet }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
             <a href="{{ route('about') }}" class="btn btn-md mt-8 bg-ink-800 text-white hover:bg-ink-900 inline-flex items-center gap-2">
-                Read more about us
+                About &amp; Team
                 <x-lucide name="arrow-right" class="h-4 w-4" />
             </a>
         </div>
@@ -267,8 +255,8 @@
         <div class="relative">
             <div class="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-card">
                 <img
-                    src="{{ asset('images/ruben-metcalfe.jpg') }}"
-                    alt="{{ config('rdm.owner') }} — owner of {{ config('rdm.name') }}"
+                    src="{{ $leadMember?->photoUrl(asset('images/ruben-metcalfe.jpg')) ?? asset('images/ruben-metcalfe.jpg') }}"
+                    alt="{{ $leadMember?->name ?? config('rdm.owner') }} — {{ $leadMember?->title ?? 'owner of ' . config('rdm.name') }}"
                     width="768"
                     height="1024"
                     loading="lazy"

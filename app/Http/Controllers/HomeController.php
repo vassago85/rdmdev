@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PageSetting;
 use App\Models\Project;
 use App\Models\Service;
 
@@ -26,11 +27,16 @@ class HomeController extends Controller
                 ->get();
         }
 
+        $about = PageSetting::current();
+        $leadMember = $about->publishedMembers()->first();
+
         return view('home', [
             'services'         => $services,
             'featuredProjects' => $featuredProjects,
-            'pageTitle'        => 'Builder & Renovations Pretoria East | RDM Developments',
-            'metaDescription'  => 'Owner-managed builder in Pretoria East. Building, bathroom renovations (including plumbing), tiling, waterproofing and painting — personally supervised by Ruben Metcalfe.',
+            'about'            => $about,
+            'leadMember'       => $leadMember,
+            'pageTitle'        => $about->homeSeoTitle(),
+            'metaDescription'  => $about->homeMetaDescription(),
         ]);
     }
 }

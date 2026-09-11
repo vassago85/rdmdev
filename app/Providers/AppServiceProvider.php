@@ -12,7 +12,16 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        // Local dev on Laragon may run PHP 8.5, which emits
+        // `PDO::MYSQL_ATTR_SSL_CA` deprecation notices from Laravel's own
+        // config files. With display_errors on (Laragon default) those
+        // notices get prepended into every HTTP response — including the
+        // Livewire.js payload — which then fails to parse and breaks the
+        // Filament admin panel. Production runs PHP 8.3 in Docker so this
+        // never triggers there. Silence deprecations in local only.
+        if ($this->app->environment('local')) {
+            error_reporting(error_reporting() & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+        }
     }
 
     public function boot(): void

@@ -5,27 +5,38 @@
 <section class="bg-ink-800 text-white">
     <div class="container py-16 sm:py-20 grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-center">
         <div>
-            <p class="eyebrow !text-brand-200">About RDM</p>
-            <h1 class="!text-white mt-3">Personally supervised construction in Pretoria East</h1>
-            <p class="mt-5 text-lg text-ink-100/90 max-w-2xl">
-                {{ config('rdm.name') }} is a Pretoria East–based construction and renovation
-                business owned and operated by {{ config('rdm.owner') }}. As a small,
-                owner-managed company, every project is personally supervised to ensure
-                quality workmanship and reliable delivery.
-            </p>
+            @if ($about->about_eyebrow)
+                <p class="eyebrow !text-brand-200">{{ $about->about_eyebrow }}</p>
+            @endif
+            <h1 class="!text-white mt-3">{{ $about->about_heading }}</h1>
+            @if ($about->about_intro)
+                <p class="mt-5 text-lg text-ink-100/90 max-w-2xl">{{ $about->about_intro }}</p>
+            @endif
             <div class="mt-8 flex flex-wrap gap-3">
                 <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-lg bg-white text-brand-700 hover:bg-brand-50">Call {{ config('rdm.phone') }}</a>
                 <a href="{{ route('contact') }}#enquiry" class="btn-outline">Request a quote</a>
             </div>
         </div>
         <div>
-            <div class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-8 text-white flex flex-col justify-between">
-                <x-rdm-logo variant="light" class="h-14 w-auto self-start" />
-                <div>
-                    <p class="text-3xl sm:text-4xl font-display font-bold">{{ config('rdm.owner') }}</p>
-                    <p class="mt-2 text-brand-100">Owner &amp; Project Supervisor</p>
+            @if ($about->heroImageUrl())
+                <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-card">
+                    <img
+                        src="{{ $about->heroImageUrl() }}"
+                        alt="{{ $about->about_heading }}"
+                        width="960"
+                        height="720"
+                        class="h-full w-full object-cover"
+                    />
                 </div>
-            </div>
+            @else
+                <div class="aspect-[4/3] rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-8 text-white flex flex-col justify-between">
+                    <x-rdm-logo variant="light" class="h-14 w-auto self-start" />
+                    <div>
+                        <p class="text-3xl sm:text-4xl font-display font-bold">{{ $leadMember?->name ?? config('rdm.owner') }}</p>
+                        <p class="mt-2 text-brand-100">{{ $leadMember?->title ?? 'Owner & Project Supervisor' }}</p>
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 </section>
@@ -33,36 +44,41 @@
 <section class="section">
     <div class="container grid gap-12 lg:grid-cols-3">
         <div class="lg:col-span-2 prose-rdm">
-            <h2>Why homeowners trust RDM Developments</h2>
-            <p>
-                Most issues on construction sites come down to one thing: nobody with skin in the
-                game is actually watching the work. At {{ config('rdm.name') }}, that problem is
-                solved by design. The owner, {{ config('rdm.owner') }}, is on-site and personally
-                responsible for every project we take on.
-            </p>
-            <p>
-                We stay deliberately small. We don't have a sales team, we don't chase jobs all
-                over Gauteng, and we don't juggle more projects than we can personally supervise.
-                That's why clients in Garsfontein, Faerie Glen, Moreleta Park, Woodhill, Silver
-                Lakes and the rest of Pretoria East come back to us and refer their neighbours.
-            </p>
+            @if ($about->about_story_heading)
+                <h2>{{ $about->about_story_heading }}</h2>
+            @endif
+            @if ($about->about_body)
+                {!! $about->about_body !!}
+            @endif
 
-            <h3>What you can expect</h3>
-            <ul>
-                <li><strong>Honest quotes.</strong> Clear scope, clear pricing, no hidden extras.</li>
-                <li><strong>Owner on-site.</strong> Ruben is your direct line for the whole project.</li>
-                <li><strong>Tidy sites.</strong> We respect that you live there — we protect, cover and clean.</li>
-                <li><strong>Quality tradesmen.</strong> Same plumbers and tilers, project after project.</li>
-                <li><strong>Realistic timelines.</strong> Promises we can keep, not ones that look good on paper.</li>
-            </ul>
+            @if ($about->expect_heading || count($about->expectItems()))
+                @if ($about->expect_heading)
+                    <h3>{{ $about->expect_heading }}</h3>
+                @endif
+                @if (count($about->expectItems()))
+                    <ul>
+                        @foreach ($about->expectItems() as $item)
+                            <li>
+                                @if (! empty($item['title']))
+                                    <strong>{{ $item['title'] }}</strong>
+                                @endif
+                                @if (! empty($item['text']))
+                                    {{ $item['text'] }}
+                                @endif
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            @endif
 
-            <h3>Where we work</h3>
-            <p>
-                We focus on Pretoria East suburbs including Garsfontein, Faerie Glen, Moreleta
-                Park, Woodhill, Silver Lakes, Olympus, Wapadrand, Elarduspark, Lynnwood and Menlo
-                Park. Working in a tight geographic area means we can be responsive when issues
-                come up on-site — because they always do.
-            </p>
+            @if ($about->where_heading || $about->where_we_work)
+                @if ($about->where_heading)
+                    <h3>{{ $about->where_heading }}</h3>
+                @endif
+                @if ($about->where_we_work)
+                    <p>{{ $about->where_we_work }}</p>
+                @endif
+            @endif
         </div>
 
         <aside class="space-y-6">
@@ -110,7 +126,6 @@
                                 <span class="block text-ink-500 font-normal mt-1">{{ config('rdm.nhbrc_number') }}</span>
                             @endif
                         </p>
-                        {{-- TODO: supply NHBRC home-builder registration number when available. --}}
                     </li>
                 </ul>
             </div>
@@ -126,6 +141,54 @@
         </aside>
     </div>
 </section>
+
+@if ($members->isNotEmpty())
+<section class="section-tight bg-ink-50" id="team">
+    <div class="container">
+        @if ($about->team_heading)
+            <p class="eyebrow">About &amp; Team</p>
+            <h2 class="mt-2">{{ $about->team_heading }}</h2>
+        @endif
+        @if ($about->team_intro)
+            <p class="mt-4 text-lg text-ink-500 max-w-2xl">{{ $about->team_intro }}</p>
+        @endif
+
+        <div class="mt-10 grid grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach ($members as $member)
+                @php
+                    $fallback = strcasecmp($member->name, (string) config('rdm.owner')) === 0
+                        ? asset('images/ruben-metcalfe.jpg')
+                        : null;
+                    $photo = $member->photoUrl($fallback);
+                @endphp
+                <article class="card p-5 sm:p-6 text-center">
+                    <div class="mx-auto h-28 w-28 sm:h-32 sm:w-32 rounded-full overflow-hidden bg-brand-50 text-brand-700">
+                        @if ($photo)
+                            <img
+                                src="{{ $photo }}"
+                                alt="{{ $member->name }}"
+                                width="256"
+                                height="256"
+                                loading="lazy"
+                                decoding="async"
+                                class="h-full w-full object-cover object-top"
+                            />
+                        @else
+                            <div class="h-full w-full flex items-center justify-center font-display text-2xl font-bold">
+                                {{ $member->initials() }}
+                            </div>
+                        @endif
+                    </div>
+                    <p class="mt-4 text-xs font-semibold uppercase tracking-[0.16em] text-brand-600">{{ $member->title }}</p>
+                    <h3 class="mt-1 !text-lg sm:!text-xl">{{ $member->name }}</h3>
+                </article>
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+@include('partials.testimonials')
 
 @include('partials.cta')
 

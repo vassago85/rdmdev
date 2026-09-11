@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PageSetting;
 use App\Models\Project;
 use App\Models\Service;
 use Illuminate\Http\Response;
@@ -13,6 +14,7 @@ class SitemapController extends Controller
     {
         $services = Service::published()->ordered()->get(['slug', 'updated_at']);
         $projects = Project::published()->ordered()->get(['slug', 'updated_at']);
+        $aboutUpdated = PageSetting::query()->value('updated_at');
 
         $xml = view('sitemap', [
             'services'           => $services,
@@ -20,7 +22,9 @@ class SitemapController extends Controller
             'homeUrl'            => rtrim(config('app.url'), '/') . '/',
             'servicesLastmod'    => optional($services->max('updated_at'))?->toAtomString(),
             'projectsLastmod'    => optional($projects->max('updated_at'))?->toAtomString(),
-            'aboutLastmod'       => $this->viewLastmod('about.blade.php'),
+            'aboutLastmod'       => $aboutUpdated
+                ? Carbon::parse($aboutUpdated)->toAtomString()
+                : $this->viewLastmod('about.blade.php'),
             'contactLastmod'     => $this->viewLastmod('contact.blade.php'),
         ])->render();
 

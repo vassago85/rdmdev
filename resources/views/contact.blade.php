@@ -4,13 +4,13 @@
 
 <section class="bg-ink-800 text-white">
     <div class="container py-16 sm:py-20">
-        <p class="eyebrow !text-brand-200">Get in touch</p>
-        <h1 class="!text-white mt-3 max-w-3xl">Request a Quote for Building or Renovation Work in Pretoria&nbsp;East</h1>
-        <p class="mt-5 text-lg text-ink-100/90 max-w-2xl leading-relaxed">
-            Whether it's a bathroom renovation, a new build, or a custom project in between —
-            {{ config('rdm.owner') }} will personally talk you through what's possible, what it
-            costs, and how long it takes. Honest answers, no pressure.
-        </p>
+        @if ($about->contact_eyebrow)
+            <p class="eyebrow !text-brand-200">{{ $about->contact_eyebrow }}</p>
+        @endif
+        <h1 class="!text-white mt-3 max-w-3xl">{{ $about->contact_heading }}</h1>
+        @if ($about->contact_intro)
+            <p class="mt-5 text-lg text-ink-100/90 max-w-2xl leading-relaxed">{{ $about->contact_intro }}</p>
+        @endif
     </div>
 </section>
 

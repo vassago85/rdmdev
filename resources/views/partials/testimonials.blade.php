@@ -1,23 +1,21 @@
 @php
-    /**
-     * PLACEHOLDER scaffold — populate config('rdm.testimonials') with real
-     * customer quotes before this section is considered live social proof.
-     * Empty array = section hidden.
-     */
-    $items = collect($testimonials ?? config('rdm.testimonials', []))
-        ->filter(fn ($t) => filled($t['quote'] ?? null) && filled($t['name'] ?? null))
-        ->values();
+    $about = $about ?? \App\Models\PageSetting::current();
+    $items = collect($about->publishedTestimonials());
 @endphp
 
 @if ($items->isNotEmpty())
 <section class="section bg-ink-50/60 border-y border-ink-100">
     <div class="container">
         <div class="max-w-2xl mx-auto text-center">
-            <p class="eyebrow">What clients say</p>
-            <h2 class="mt-2">Trusted across Pretoria East</h2>
-            <p class="mt-4 text-lg text-ink-500 leading-relaxed">
-                Straight feedback from homeowners we've worked with.
-            </p>
+            @if ($about->testimonials_eyebrow)
+                <p class="eyebrow">{{ $about->testimonials_eyebrow }}</p>
+            @endif
+            @if ($about->testimonials_heading)
+                <h2 class="mt-2">{{ $about->testimonials_heading }}</h2>
+            @endif
+            @if ($about->testimonials_intro)
+                <p class="mt-4 text-lg text-ink-500 leading-relaxed">{{ $about->testimonials_intro }}</p>
+            @endif
         </div>
 
         <div class="mt-12 grid gap-6 {{ $items->count() === 1 ? 'max-w-xl mx-auto' : ($items->count() === 2 ? 'sm:grid-cols-2 max-w-4xl mx-auto' : 'sm:grid-cols-2 lg:grid-cols-3') }}">

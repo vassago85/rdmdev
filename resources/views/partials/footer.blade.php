@@ -33,7 +33,7 @@
             <h4 class="text-sm font-semibold tracking-wide uppercase text-white mb-4">Company</h4>
             <ul class="space-y-2 text-ink-200 text-sm">
                 <li><a class="hover:text-white" href="{{ route('projects.index') }}">Projects</a></li>
-                <li><a class="hover:text-white" href="{{ route('about') }}">About</a></li>
+                <li><a class="hover:text-white" href="{{ route('about') }}">About &amp; Team</a></li>
                 <li><a class="hover:text-white" href="{{ route('contact') }}">Contact</a></li>
                 <li class="flex items-center gap-2"><x-lucide name="mail" class="h-4 w-4 text-brand-300" /> <a class="hover:text-white" href="mailto:{{ config('rdm.email') }}">{{ config('rdm.email') }}</a></li>
                 <li class="flex items-center gap-2 text-ink-300"><x-lucide name="map-pin" class="h-4 w-4 text-brand-300" /> {{ config('rdm.location') }}</li>

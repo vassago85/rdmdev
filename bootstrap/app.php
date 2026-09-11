@@ -4,6 +4,15 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
+// Suppress PHP deprecation notices at the SAPI boundary. Laragon-local
+// PHP 8.5 emits `PDO::MYSQL_ATTR_SSL_CA` deprecations from Laravel's own
+// config files, and with display_errors on (Laragon default) those get
+// prepended into every HTTP response — including livewire.js — which
+// breaks the Filament admin panel. Production runs PHP 8.3 in Docker with
+// display_errors off, so this is a no-op there. Laravel's exception
+// handler still renders real errors via Ignition.
+error_reporting(error_reporting() & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',

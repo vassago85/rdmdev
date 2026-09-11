@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Filament\Resources\EnquiryResource;
 use App\Filament\Resources\ProjectResource;
 use App\Filament\Resources\ServiceResource;
+use App\Filament\Widgets\ContentDeskWidget;
 use App\Filament\Widgets\EnquiryStatsWidget;
 use App\Filament\Widgets\RecentEnquiriesWidget;
 use Filament\Actions\Action;
@@ -16,8 +17,13 @@ class Dashboard extends BaseDashboard
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('editWebsite')
+                ->label('Edit website')
+                ->icon('heroicon-o-pencil-square')
+                ->url(ManageAboutTeam::getUrl()),
+
             Action::make('newEnquiries')
-                ->label('View new enquiries')
+                ->label('Enquiries')
                 ->icon('heroicon-o-inbox-stack')
                 ->color('warning')
                 ->url(EnquiryResource::getUrl('index')),
@@ -31,18 +37,13 @@ class Dashboard extends BaseDashboard
                 ->label('New service')
                 ->icon('heroicon-o-plus')
                 ->url(ServiceResource::getUrl('create')),
-
-            Action::make('notifications')
-                ->label('Notification settings')
-                ->icon('heroicon-o-bell')
-                ->color('gray')
-                ->url(ManageNotifications::getUrl()),
         ];
     }
 
     public function getWidgets(): array
     {
         return [
+            ContentDeskWidget::class,
             AccountWidget::class,
             EnquiryStatsWidget::class,
             RecentEnquiriesWidget::class,

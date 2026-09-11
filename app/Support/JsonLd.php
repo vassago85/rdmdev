@@ -2,8 +2,10 @@
 
 namespace App\Support;
 
+use App\Models\PageSetting;
 use App\Models\Project;
 use App\Models\Service;
+use App\Models\TeamMember;
 use Illuminate\Support\Str;
 
 /**
@@ -106,6 +108,37 @@ class JsonLd
             ],
             'serviceType' => $service->title,
         ];
+    }
+
+    public static function aboutPage(PageSetting $page): array
+    {
+        return [
+            '@type'      => 'AboutPage',
+            '@id'        => route('about') . '#about',
+            'name'       => $page->seoTitle(),
+            'description'=> $page->metaDescription(),
+            'url'        => route('about'),
+            'mainEntity' => ['@id' => config('rdm.schema_id')],
+            'about'      => ['@id' => config('rdm.schema_id')],
+        ];
+    }
+
+    public static function person(TeamMember $member): array
+    {
+        $person = [
+            '@type'    => 'Person',
+            '@id'      => route('about') . '#person-' . $member->id,
+            'name'     => $member->name,
+            'jobTitle' => $member->title,
+            'worksFor' => ['@id' => config('rdm.schema_id')],
+            'url'      => route('about') . '#team',
+        ];
+
+        if ($photo = $member->photoUrl()) {
+            $person['image'] = $photo;
+        }
+
+        return $person;
     }
 
     public static function contactPage(): array

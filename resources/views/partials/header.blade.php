@@ -13,7 +13,7 @@
                     ['label' => 'Home',     'route' => 'home',            'match' => 'home'],
                     ['label' => 'Services', 'route' => 'services.index', 'match' => 'services.*'],
                     ['label' => 'Projects', 'route' => 'projects.index', 'match' => 'projects.*'],
-                    ['label' => 'About',    'route' => 'about',          'match' => 'about'],
+                    ['label' => 'About & Team', 'route' => 'about',      'match' => 'about'],
                     ['label' => 'Contact',  'route' => 'contact',        'match' => 'contact'],
                 ];
             @endphp

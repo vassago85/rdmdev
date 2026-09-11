@@ -74,27 +74,12 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Testimonials (home page social proof)
+    | Testimonials
     |--------------------------------------------------------------------------
     |
-    | PLACEHOLDER — replace with real client quotes before relying on this for
-    | marketing. Leave as an empty array [] to hide the section entirely.
+    | Live quotes are published from Filament → Content → About & Team
+    | (Testimonials tab). This config array is no longer read by the site.
     |
     */
-    'testimonials' => [
-        // TODO: replace these placeholder quotes with real client testimonials.
-        [
-            'quote'  => 'Ruben was on site, on time, and the finish was exactly what we agreed. No chasing, no surprises.',
-            'name'   => 'Homeowner',
-            'suburb' => 'Garsfontein',
-            'rating' => 5,
-        ],
-        [
-            'quote'  => 'Clear quote, tidy site, and the bathroom came out better than we expected. Would use RDM again.',
-            'name'   => 'Homeowner',
-            'suburb' => 'Faerie Glen',
-            'rating' => 5,
-        ],
-    ],
 
 ];
