@@ -159,7 +159,7 @@ class ManageAboutTeam extends Page implements HasForms
     {
         return [
             Forms\Components\Section::make('Team section')
-                ->description('Up to six people. Each slot is a title, a face, and a name. Unpublished or empty slots stay off the website.')
+                ->description('Up to eight people. Each slot is a title, a face, and a name. Unpublished or empty slots stay off the website.')
                 ->schema([
                     Forms\Components\TextInput::make('team_heading')
                         ->label('Section heading')

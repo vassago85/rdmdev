@@ -173,7 +173,7 @@
         @endif
 
         @if ($members->isNotEmpty())
-        <div class="mt-10 grid grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @foreach ($members as $member)
                 @php
                     $fallback = strcasecmp($member->name, (string) config('rdm.owner')) === 0

@@ -16,7 +16,7 @@ class PageSetting extends Model
 {
     use HasFactory;
 
-    public const MAX_TEAM_MEMBERS = 6;
+    public const MAX_TEAM_MEMBERS = 8;
 
     protected $guarded = [];
 

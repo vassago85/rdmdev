@@ -46,15 +46,15 @@ class AboutTeamPageTest extends TestCase
             ->assertDontSee('Site Foreman');
     }
 
-    public function test_a_seventh_team_member_is_rejected(): void
+    public function test_team_cap_matches_the_configured_max(): void
     {
         $page = PageSetting::current();
 
-        TeamMember::factory()->count(5)->create([
+        TeamMember::factory()->count(PageSetting::MAX_TEAM_MEMBERS - 1)->create([
             'page_setting_id' => $page->id,
         ]);
 
-        $this->assertSame(6, $page->members()->count());
+        $this->assertSame(PageSetting::MAX_TEAM_MEMBERS, $page->members()->count());
 
         $this->expectException(OverflowException::class);
 

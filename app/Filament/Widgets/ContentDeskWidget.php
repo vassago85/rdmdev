@@ -21,7 +21,7 @@ class ContentDeskWidget extends Widget
         return [
             [
                 'label'       => 'Website content',
-                'description' => 'Homepage, About, Team (6 faces), Testimonials, Contact, and SEO. Publish goes live immediately.',
+                'description' => 'Homepage, About, Team (8 faces), Testimonials, Contact, and SEO. Publish goes live immediately.',
                 'url'         => ManageAboutTeam::getUrl(),
                 'icon'        => 'heroicon-o-pencil-square',
             ],
