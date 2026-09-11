@@ -169,6 +169,18 @@ class ManageAboutTeam extends Page implements HasForms
                         ->label('Short intro (optional)')
                         ->rows(2)
                         ->maxLength(300),
+                    Forms\Components\FileUpload::make('team_group_photo')
+                        ->label('Group photo (optional)')
+                        ->image()
+                        ->disk('public')
+                        ->directory('team')
+                        ->imageEditor()
+                        ->imagePreviewHeight('220')
+                        ->helperText('Wide photo of the team on-site. Shown above the individual cards. Landscape works best (roughly 1600×900).'),
+                    Forms\Components\TextInput::make('team_group_photo_caption')
+                        ->label('Photo caption (optional)')
+                        ->maxLength(160)
+                        ->helperText('One short line describing what\'s in the photo. Leave empty to hide.'),
                     Forms\Components\Repeater::make('members')
                         ->relationship()
                         ->label('Team members')

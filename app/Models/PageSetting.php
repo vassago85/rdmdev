@@ -128,6 +128,13 @@ class PageSetting extends Model
         return $heroFile ? asset('images/' . $heroFile) : null;
     }
 
+    public function teamGroupPhotoUrl(): ?string
+    {
+        return $this->team_group_photo
+            ? asset('storage/' . $this->team_group_photo)
+            : null;
+    }
+
     protected function limitMeta(?string $raw): string
     {
         $raw = preg_replace('/#\S+/u', '', (string) $raw) ?? '';

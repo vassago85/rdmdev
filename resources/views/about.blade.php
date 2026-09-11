@@ -142,7 +142,7 @@
     </div>
 </section>
 
-@if ($members->isNotEmpty())
+@if ($members->isNotEmpty() || $about->teamGroupPhotoUrl())
 <section class="section-tight bg-ink-50" id="team">
     <div class="container">
         @if ($about->team_heading)
@@ -153,6 +153,26 @@
             <p class="mt-4 text-lg text-ink-500 max-w-2xl">{{ $about->team_intro }}</p>
         @endif
 
+        @if ($about->teamGroupPhotoUrl())
+            <figure class="mt-10 rounded-2xl overflow-hidden shadow-card bg-white">
+                <img
+                    src="{{ $about->teamGroupPhotoUrl() }}"
+                    alt="{{ $about->team_group_photo_caption ?: 'The RDM Developments team on-site in Pretoria East' }}"
+                    width="1600"
+                    height="900"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-auto object-cover"
+                />
+                @if ($about->team_group_photo_caption)
+                    <figcaption class="px-5 py-3 text-sm text-ink-500 text-center">
+                        {{ $about->team_group_photo_caption }}
+                    </figcaption>
+                @endif
+            </figure>
+        @endif
+
+        @if ($members->isNotEmpty())
         <div class="mt-10 grid grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach ($members as $member)
                 @php
@@ -184,6 +204,7 @@
                 </article>
             @endforeach
         </div>
+        @endif
     </div>
 </section>
 @endif

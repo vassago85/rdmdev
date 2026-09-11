@@ -153,6 +153,31 @@ class AboutTeamPageTest extends TestCase
             ->assertSeeText('Custom contact intro for tests.');
     }
 
+    public function test_team_group_photo_renders_with_caption_when_uploaded(): void
+    {
+        $page = PageSetting::current();
+        $page->update([
+            'team_group_photo'         => 'team/rdm-group.jpg',
+            'team_group_photo_caption' => 'The RDM crew on a Garsfontein renovation.',
+        ]);
+        PageSetting::flushCache();
+
+        $response = $this->get(route('about'))->assertOk();
+        $response->assertSee('storage/team/rdm-group.jpg', false);
+        $response->assertSeeText('The RDM crew on a Garsfontein renovation.');
+    }
+
+    public function test_group_photo_absent_when_no_upload(): void
+    {
+        PageSetting::current();
+        PageSetting::flushCache();
+
+        $this->get(route('about'))
+            ->assertOk()
+            ->assertDontSee('team_group_photo_caption', false)
+            ->assertDontSee('rdm-group.jpg', false);
+    }
+
     public function test_empty_testimonials_hide_the_section(): void
     {
         $page = PageSetting::current();
