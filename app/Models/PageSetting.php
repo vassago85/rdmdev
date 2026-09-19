@@ -291,6 +291,12 @@ class PageSetting extends Model
                     'suburb' => 'Faerie Glen',
                     'rating' => 5,
                 ],
+                [
+                    'quote'  => 'Dankie vir die ongelooflike harde werk die afgelope paar maande. Julle het gehelp om ons huis en die prentjie wat ons gehad het, waar te maak. Dit was ’n plesier om julle deel van ons huis te kon maak vir amper drie maande. Dankie vir die vasbyt as ons moeilik geraak het, vir die ekstra op-en-af ry, en vir die ure wat julle hier deurgebring het. Ons glo verseker daar gaan ’n volgende fase wees.',
+                    'name'   => 'Homeowner',
+                    'suburb' => '',
+                    'rating' => 5,
+                ],
             ],
             'seo_title' => 'About RDM Developments | Builder in Pretoria East',
             'seo_meta_description' => $name . ' is a Pretoria East–based construction and renovation business owned and operated by ' . $owner . '. Every project is personally supervised.',
