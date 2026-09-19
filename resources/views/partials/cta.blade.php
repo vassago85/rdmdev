@@ -14,12 +14,10 @@
                 <x-lucide name="phone" class="h-5 w-5" />
                 Call {{ config('rdm.phone') }}
             </a>
-            <a href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode(config('rdm.whatsapp_greeting')) }}"
-               target="_blank" rel="noopener"
-               class="btn-whatsapp">
+            <x-whatsapp-link placement="cta" class="btn-whatsapp">
                 <x-lucide name="message-circle" class="h-5 w-5" />
                 WhatsApp
-            </a>
+            </x-whatsapp-link>
             <a href="{{ route('contact') }}#enquiry" class="btn-outline">
                 <x-lucide name="file-text" class="h-5 w-5" />
                 Request a quote

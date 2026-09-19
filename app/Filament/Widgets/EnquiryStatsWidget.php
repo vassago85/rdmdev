@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Enquiry;
 use App\Models\Project;
 use App\Models\Service;
+use App\Models\WhatsappClick;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Carbon;
@@ -23,6 +24,13 @@ class EnquiryStatsWidget extends BaseWidget
 
         $thisWeek = Enquiry::where('created_at', '>=', $thisWeekStart)->count();
         $lastWeek = Enquiry::whereBetween('created_at', [$lastWeekStart, $thisWeekStart])->count();
+
+        $whatsappThisWeek = WhatsappClick::where('created_at', '>=', $thisWeekStart)->count();
+        $whatsappLastWeek = WhatsappClick::whereBetween('created_at', [$lastWeekStart, $thisWeekStart])->count();
+        $whatsappDelta = $whatsappThisWeek - $whatsappLastWeek;
+        $whatsappTrend = $whatsappDelta === 0
+            ? 'Same as last week'
+            : sprintf('%s%d vs last week', $whatsappDelta > 0 ? '+' : '', $whatsappDelta);
 
         $delta = $thisWeek - $lastWeek;
         $trendIcon = $delta > 0 ? 'heroicon-m-arrow-trending-up'
@@ -48,6 +56,12 @@ class EnquiryStatsWidget extends BaseWidget
                 ->description($trendLabel)
                 ->descriptionIcon($trendIcon)
                 ->color($trendColor),
+
+            Stat::make('WhatsApp clicks this week', $whatsappThisWeek)
+                ->description($whatsappTrend)
+                ->descriptionIcon($whatsappDelta > 0 ? 'heroicon-m-arrow-trending-up'
+                    : ($whatsappDelta < 0 ? 'heroicon-m-arrow-trending-down' : 'heroicon-m-minus'))
+                ->color($whatsappThisWeek > 0 ? 'success' : 'gray'),
 
             Stat::make('Unactioned enquiries', $unread)
                 ->description($unread > 0 ? 'Unread — need a response' : 'All caught up')

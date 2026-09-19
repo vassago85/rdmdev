@@ -25,11 +25,10 @@
                 <x-lucide name="phone" class="h-5 w-5" />
                 Call {{ config('rdm.phone') }}
             </a>
-            <a href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode('Hi Ruben, I would like a quote for: '.$service->title) }}"
-               target="_blank" rel="noopener" class="btn-whatsapp">
+            <x-whatsapp-link placement="service" :text="'Hi Ruben, I would like a quote for: '.$service->title" class="btn-whatsapp">
                 <x-lucide name="message-circle" class="h-5 w-5" />
                 WhatsApp for a quote
-            </a>
+            </x-whatsapp-link>
             <a href="#enquiry" class="btn-outline">
                 <x-lucide name="file-text" class="h-5 w-5" />
                 Request a quote
@@ -75,11 +74,10 @@
                         <x-lucide name="phone" class="h-4 w-4" />
                         {{ config('rdm.phone') }}
                     </a>
-                    <a href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode('Hi Ruben, I would like a quote for: '.$service->title) }}"
-                       target="_blank" rel="noopener" class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957]">
+                    <x-whatsapp-link placement="service" :text="'Hi Ruben, I would like a quote for: '.$service->title" class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957]">
                         <x-lucide name="message-circle" class="h-4 w-4" />
                         WhatsApp
-                    </a>
+                    </x-whatsapp-link>
                 </div>
             </div>
         </aside>

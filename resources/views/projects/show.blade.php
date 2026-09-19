@@ -92,8 +92,7 @@
                 <p class="text-ink-600 mb-4">Get a no-obligation quote from {{ config('rdm.owner') }}.</p>
                 <div class="flex flex-wrap gap-2">
                     <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-md bg-brand text-white hover:bg-brand-600">Call {{ config('rdm.phone') }}</a>
-                    <a href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode('Hi Ruben, I have a project similar to: '.$project->title) }}"
-                       target="_blank" rel="noopener" class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957]">WhatsApp</a>
+                    <x-whatsapp-link placement="project" :text="'Hi Ruben, I have a project similar to: '.$project->title" class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957]">WhatsApp</x-whatsapp-link>
                 </div>
             </div>
         </aside>

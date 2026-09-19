@@ -91,10 +91,9 @@
                     </li>
                     <li>
                         <p class="text-xs uppercase text-ink-400 tracking-wide">WhatsApp</p>
-                        <a class="font-semibold link-underline" target="_blank" rel="noopener"
-                           href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode(config('rdm.whatsapp_greeting')) }}">
+                        <x-whatsapp-link placement="about" class="font-semibold link-underline">
                             {{ config('rdm.phone') }}
-                        </a>
+                        </x-whatsapp-link>
                     </li>
                     <li>
                         <p class="text-xs uppercase text-ink-400 tracking-wide">Email</p>

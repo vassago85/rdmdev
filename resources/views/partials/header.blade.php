@@ -53,12 +53,10 @@
                     <x-lucide name="phone" class="h-4 w-4" />
                     Call {{ config('rdm.phone') }}
                 </a>
-                <a href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode(config('rdm.whatsapp_greeting')) }}"
-                   target="_blank" rel="noopener"
-                   class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957] flex-1">
+                <x-whatsapp-link placement="header" class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957] flex-1">
                     <x-lucide name="message-circle" class="h-4 w-4" />
                     WhatsApp
-                </a>
+                </x-whatsapp-link>
             </div>
         </div>
     </div>

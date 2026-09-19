@@ -52,12 +52,10 @@
                         </span>
                         <div class="flex-1">
                             <p class="text-xs uppercase text-ink-400 tracking-wide font-semibold">WhatsApp</p>
-                            <a class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957] mt-1.5"
-                               target="_blank" rel="noopener"
-                               href="https://wa.me/{{ config('rdm.whatsapp') }}?text={{ urlencode(config('rdm.whatsapp_greeting')) }}">
+                            <x-whatsapp-link placement="contact" class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957] mt-1.5">
                                 <x-lucide name="message-circle" class="h-4 w-4" />
                                 Chat on WhatsApp
-                            </a>
+                            </x-whatsapp-link>
                         </div>
                     </li>
 

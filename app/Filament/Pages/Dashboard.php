@@ -8,6 +8,7 @@ use App\Filament\Resources\ServiceResource;
 use App\Filament\Widgets\ContentDeskWidget;
 use App\Filament\Widgets\EnquiryStatsWidget;
 use App\Filament\Widgets\RecentEnquiriesWidget;
+use App\Filament\Widgets\RecentWhatsappClicksWidget;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard as BaseDashboard;
 use Filament\Widgets\AccountWidget;
@@ -47,6 +48,7 @@ class Dashboard extends BaseDashboard
             AccountWidget::class,
             EnquiryStatsWidget::class,
             RecentEnquiriesWidget::class,
+            RecentWhatsappClicksWidget::class,
         ];
     }
 
