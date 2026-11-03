@@ -5,6 +5,7 @@
 @tailwind utilities;
 
 [x-cloak] { display: none !important; }
+picture.contents { display: contents; }
 
 @layer base {
     html { scroll-behavior: smooth; }

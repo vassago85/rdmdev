@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\MetaDescription;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 /**
  * Singleton row (id=1) for the public About & Team page — the copy, SEO,
@@ -81,8 +81,10 @@ class PageSetting extends Model
 
     public function metaDescription(): string
     {
-        return $this->limitMeta($this->seo_meta_description ?: $this->about_intro
-            ?: 'RDM Developments is a Pretoria East–based construction and renovation business owned and operated by Ruben Metcalfe. Every project is personally supervised.');
+        return MetaDescription::from(
+            $this->seo_meta_description,
+            $this->about_intro ?: 'RDM Developments is a Pretoria East-based construction and renovation business owned and operated by Ruben Metcalfe. Every project is personally supervised.'
+        );
     }
 
     public function homeSeoTitle(): string
@@ -93,8 +95,10 @@ class PageSetting extends Model
 
     public function homeMetaDescription(): string
     {
-        return $this->limitMeta($this->home_seo_meta_description
-            ?: 'Owner-managed builder in Pretoria East. Building, bathroom renovations (including plumbing), tiling, waterproofing and painting — personally supervised by Ruben Metcalfe.');
+        return MetaDescription::from(
+            $this->home_seo_meta_description,
+            'Owner-managed builder in Pretoria East. Building, bathroom renovations (including plumbing), tiling, waterproofing and painting, personally supervised by Ruben Metcalfe.'
+        );
     }
 
     public function contactSeoTitle(): string
@@ -105,8 +109,10 @@ class PageSetting extends Model
 
     public function contactMetaDescription(): string
     {
-        return $this->limitMeta($this->contact_seo_meta_description
-            ?: 'Request a quote from RDM Developments for your building or renovation project in Pretoria East. Call, WhatsApp or complete the enquiry form.');
+        return MetaDescription::from(
+            $this->contact_seo_meta_description,
+            'Request a quote from RDM Developments for your building or renovation project in Pretoria East. Call, WhatsApp or complete the enquiry form.'
+        );
     }
 
     public function heroImageUrl(): ?string
@@ -135,12 +141,17 @@ class PageSetting extends Model
             : null;
     }
 
-    protected function limitMeta(?string $raw): string
+    public static function isPublicTestimonialName(?string $name): bool
     {
-        $raw = preg_replace('/#\S+/u', '', (string) $raw) ?? '';
-        $raw = trim(preg_replace('/\s{2,}/u', ' ', $raw) ?? $raw);
+        $name = trim((string) $name);
 
-        return Str::limit($raw, 155, '…');
+        if ($name === '') {
+            return false;
+        }
+
+        $blocked = ['todo', 'tbd', 'homeowner', 'anonymous', 'n/a', 'na', 'xxx', 'placeholder', 'test'];
+
+        return ! in_array(mb_strtolower($name), $blocked, true);
     }
 
     /** @return array<int, array{title: string, text: string}> */
@@ -156,13 +167,35 @@ class PageSetting extends Model
     public function publishedTestimonials(): array
     {
         return collect($this->testimonials ?? [])
-            ->filter(fn ($item) => filled($item['quote'] ?? null) && filled($item['name'] ?? null))
-            ->map(fn (array $item) => [
-                'quote'  => (string) $item['quote'],
-                'name'   => (string) $item['name'],
-                'suburb' => (string) ($item['suburb'] ?? ''),
-                'rating' => (int) ($item['rating'] ?? 5),
-            ])
+            ->filter(function ($item) {
+                if (! is_array($item) || ! filled($item['quote'] ?? null)) {
+                    return false;
+                }
+
+                if (! self::isPublicTestimonialName($item['name'] ?? null)) {
+                    return false;
+                }
+
+                if (array_key_exists('is_published', $item) && ! $item['is_published']) {
+                    return false;
+                }
+
+                return true;
+            })
+            ->map(function (array $item) {
+                $suburb = trim((string) ($item['suburb'] ?? ''));
+
+                if (in_array(mb_strtolower($suburb), ['todo', 'tbd', 'placeholder'], true)) {
+                    $suburb = '';
+                }
+
+                return [
+                    'quote'  => (string) $item['quote'],
+                    'name'   => trim((string) $item['name']),
+                    'suburb' => $suburb,
+                    'rating' => (int) ($item['rating'] ?? 5),
+                ];
+            })
             ->values()
             ->all();
     }
@@ -262,7 +295,7 @@ class PageSetting extends Model
             'home_seo_title' => 'Builder & Renovations Pretoria East | RDM Developments',
             'home_seo_meta_description' => 'Owner-managed builder in Pretoria East. Building, bathroom renovations (including plumbing), tiling, waterproofing and painting — personally supervised by ' . $owner . '.',
             'contact_eyebrow' => 'Get in touch',
-            'contact_heading' => 'Request a Quote for Building or Renovation Work in Pretoria East',
+            'contact_heading' => 'Request a quote for building or renovation work in Pretoria East',
             'contact_intro'   => 'Whether it\'s a bathroom renovation, a new build, or a custom project in between — ' . $owner . ' will personally talk you through what\'s possible, what it costs, and how long it takes. Honest answers, no pressure.',
             'contact_seo_title' => 'Contact RDM Developments | Pretoria East Builder',
             'contact_seo_meta_description' => 'Request a quote from RDM Developments for your building or renovation project in Pretoria East. Call, WhatsApp or complete the enquiry form.',
@@ -277,26 +310,7 @@ class PageSetting extends Model
             'testimonials_eyebrow' => 'What clients say',
             'testimonials_heading' => 'Trusted across Pretoria East',
             'testimonials_intro'   => 'Straight feedback from homeowners we\'ve worked with.',
-            'testimonials' => [
-                [
-                    'quote'  => 'Ruben was on site, on time, and the finish was exactly what we agreed. No chasing, no surprises.',
-                    'name'   => 'TODO',
-                    'suburb' => 'Garsfontein',
-                    'rating' => 5,
-                ],
-                [
-                    'quote'  => 'Clear quote, tidy site, and the bathroom came out better than we expected. Would use RDM again.',
-                    'name'   => 'TODO',
-                    'suburb' => 'Faerie Glen',
-                    'rating' => 5,
-                ],
-                [
-                    'quote'  => 'Dankie vir die ongelooflike harde werk die afgelope paar maande. Julle het gehelp om ons huis en die prentjie wat ons gehad het, waar te maak. Dit was ’n plesier om julle deel van ons huis te kon maak vir amper drie maande. Dankie vir die vasbyt as ons moeilik geraak het, vir die ekstra op-en-af ry, en vir die ure wat julle hier deurgebring het. Ons glo verseker daar gaan ’n volgende fase wees.',
-                    'name'   => 'TODO',
-                    'suburb' => 'Garsfontein',
-                    'rating' => 5,
-                ],
-            ],
+            'testimonials' => [],
             'seo_title' => 'About RDM Developments | Builder in Pretoria East',
             'seo_meta_description' => $name . ' is a Pretoria East–based construction and renovation business owned and operated by ' . $owner . '. Every project is personally supervised.',
         ];

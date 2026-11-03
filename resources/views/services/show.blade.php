@@ -84,6 +84,19 @@
     </div>
 </section>
 
+@if ($projects->isNotEmpty())
+<section class="section-tight">
+    <div class="container">
+        <h2 class="!text-2xl mb-8">Related projects</h2>
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            @foreach ($projects as $project)
+                @include('partials.project-card', ['project' => $project])
+            @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
 <x-faq-section :items="$service->faqItems()" class="bg-ink-50/60 border-y border-ink-100" />
 
 <section class="section-tight bg-ink-50/60 border-y border-ink-100" id="enquiry">

@@ -1,17 +1,21 @@
 @php
     $url   = route('projects.show', $project->slug);
-    $image = $project->coverImageUrl();
+    $image = $project->coverPicture();
     $isRenovation = $project->project_type === \App\Models\Project::TYPE_RENOVATION;
 @endphp
 
 <div class="card-interactive group block overflow-hidden flex flex-col">
     <div class="aspect-[4/3] bg-ink-100 overflow-hidden relative">
         <a href="{{ $url }}" class="block w-full h-full" aria-label="{{ $project->baseTitle() }}">
-            @if ($image)
-                <img src="{{ $image }}"
-                     alt="{{ $project->baseTitle() }}"
-                     loading="lazy" decoding="async"
-                     class="w-full h-full object-cover transition duration-500 ease-out group-hover:scale-105">
+            @if (! empty($image['src']))
+                <x-responsive-image
+                    :image="$image"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    :alt="$project->baseTitle()"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover transition duration-500 ease-out group-hover:scale-105"
+                />
             @else
                 <div class="w-full h-full grid place-items-center text-ink-300 bg-gradient-to-br from-ink-100 to-ink-200">
                     <x-rdm-logo class="h-10 opacity-40" :eager="false" />

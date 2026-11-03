@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Support\MetaDescription;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Str;
 
 class Service extends Model
@@ -62,15 +64,22 @@ class Service extends Model
         return $this->seo_title ?: $this->title . ' | RDM Developments';
     }
 
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class);
+    }
+
+    public function publishedProjects(): BelongsToMany
+    {
+        return $this->projects()->published()->ordered();
+    }
+
     public function metaDescription(): string
     {
-        $raw = $this->meta_description
-            ?: strip_tags($this->excerpt ?: $this->description ?: '');
-
-        $raw = preg_replace('/#\S+/u', '', $raw) ?? $raw;
-        $raw = trim(preg_replace('/\s{2,}/u', ' ', $raw) ?? $raw);
-
-        return Str::limit($raw, 155, '…');
+        return MetaDescription::from(
+            $this->meta_description,
+            $this->excerpt ?: $this->description
+        );
     }
 
     public function heroImageUrl(): ?string

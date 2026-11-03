@@ -6,6 +6,7 @@
     $heroUrl = $about->homeHeroImageUrl();
     $featuredShown = $featuredProjects->take(6);
     $featuredCount = $featuredShown->count();
+    $owner = \App\Support\ResponsiveImage::portrait($leadMember?->photo);
 @endphp
 
 {{-- HERO --}}
@@ -59,10 +60,13 @@
         <div class="hidden md:block lg:pl-4">
             <div class="bg-ink-900/55 backdrop-blur-md border border-white/15 rounded-2xl p-5 sm:p-6 shadow-2xl">
                 <div class="flex items-center gap-3 mb-4">
-                    <img src="{{ $leadMember?->photoUrl(asset('images/ruben-metcalfe.jpg')) ?? asset('images/ruben-metcalfe.jpg') }}"
-                         alt="{{ $leadMember?->name ?? config('rdm.owner') }}, owner of {{ config('rdm.name') }}"
-                         width="48" height="48" loading="eager" decoding="async"
-                         class="h-12 w-12 rounded-full object-cover object-top ring-2 ring-brand-400/60">
+                    <x-responsive-image
+                        :image="$owner['avatar']"
+                        :alt="($leadMember?->name ?? config('rdm.owner')) . ', owner of ' . config('rdm.name')"
+                        class="h-12 w-12 rounded-full object-cover object-top ring-2 ring-brand-400/60"
+                        loading="eager"
+                        decoding="async"
+                    />
                     <div>
                         <p class="font-semibold text-white leading-tight">{{ $leadMember?->name ?? config('rdm.owner') }}</p>
                         <p class="text-sm text-ink-200">{{ $about->home_owner_role ?: 'Owner · RDM Developments' }}</p>
@@ -263,14 +267,13 @@
 
         <div class="relative">
             <div class="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-card">
-                <img
-                    src="{{ $leadMember?->photoUrl(asset('images/ruben-metcalfe.jpg')) ?? asset('images/ruben-metcalfe.jpg') }}"
-                    alt="{{ $leadMember?->name ?? config('rdm.owner') }} — {{ $leadMember?->title ?? 'owner of ' . config('rdm.name') }}"
-                    width="768"
-                    height="1024"
+                <x-responsive-image
+                    :image="$owner['large']"
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    :alt="($leadMember?->name ?? config('rdm.owner')) . ', ' . ($leadMember?->title ?? 'owner of ' . config('rdm.name'))"
+                    class="absolute inset-0 h-full w-full object-cover object-top"
                     loading="lazy"
                     decoding="async"
-                    class="absolute inset-0 h-full w-full object-cover object-top"
                 />
                 {{-- Dark gradient so the branding stays legible over the photo --}}
                 <div class="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/25 to-transparent"></div>

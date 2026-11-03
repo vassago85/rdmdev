@@ -369,7 +369,7 @@ class ManageAboutTeam extends Page implements HasForms
     {
         return [
             Forms\Components\Section::make('Client testimonials')
-                ->description('Shown on the home page and the About & Team page. Only add real client quotes — empty quote or name hides that card.')
+                ->description('Shown on the home page and the About page. A quote stays hidden until it has a real first name and is published.')
                 ->schema([
                     Forms\Components\TextInput::make('testimonials_eyebrow')
                         ->label('Small label')
@@ -385,16 +385,19 @@ class ManageAboutTeam extends Page implements HasForms
                     Forms\Components\Repeater::make('testimonials')
                         ->label('Quotes')
                         ->schema([
+                            Forms\Components\Toggle::make('is_published')
+                                ->label('Published')
+                                ->default(false)
+                                ->helperText('Leave off until the first name is a real client name.'),
                             Forms\Components\Textarea::make('quote')
                                 ->label('Quote')
                                 ->required()
                                 ->rows(3)
                                 ->maxLength(500),
                             Forms\Components\TextInput::make('name')
-                                ->label('Name')
-                                ->required()
+                                ->label('First name')
                                 ->maxLength(80)
-                                ->helperText('First name, or “Homeowner” if they asked not to be named.'),
+                                ->helperText('Optional until you have it. Empty names and placeholders such as TODO are never shown.'),
                             Forms\Components\TextInput::make('suburb')
                                 ->label('Suburb')
                                 ->maxLength(80)

@@ -38,7 +38,13 @@ class ProjectController extends Controller
     {
         abort_unless($project->is_published, 404);
 
-        $project->load(['beforeImages', 'afterImages', 'galleryImages', 'images']);
+        $project->load([
+            'beforeImages',
+            'afterImages',
+            'galleryImages',
+            'images',
+            'services' => fn ($query) => $query->published()->ordered(),
+        ]);
 
         $related = Project::published()
             ->where('id', '!=', $project->id)

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ResponsiveImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,5 +25,11 @@ class ProjectImage extends Model
     public function url(): string
     {
         return asset('storage/' . $this->path);
+    }
+
+    /** @return array{src: string, srcset: ?string, width: int, height: int, original_width: int, below_1200: bool} */
+    public function picture(): array
+    {
+        return ResponsiveImage::fromStoragePath($this->path);
     }
 }

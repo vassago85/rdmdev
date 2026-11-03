@@ -53,6 +53,12 @@ class ProjectResource extends Resource
                     Forms\Components\TextInput::make('category')
                         ->maxLength(80)
                         ->placeholder('Bathroom, Building, Tiling, Waterproofing, Painting…'),
+                    Forms\Components\Select::make('services')
+                        ->relationship('services', 'title')
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
+                        ->helperText('Links this project to those service pages, and back again.'),
                     Forms\Components\TextInput::make('location')
                         ->label('Location / suburb')
                         ->maxLength(120)
@@ -88,7 +94,9 @@ class ProjectResource extends Resource
                     Forms\Components\Textarea::make('meta_description')
                         ->rows(2)
                         ->maxLength(160)
-                        ->helperText('Keep under ~155 characters. Hashtags are stripped on output.'),
+                        ->live()
+                        ->hint(fn (?string $state): string => mb_strlen((string) $state).' / 160')
+                        ->helperText('Search snippet when set. Leave blank to use the project text, cut at a word under 155 characters.'),
                 ]),
 
             Forms\Components\Section::make('Settings')

@@ -113,11 +113,12 @@ docker compose -f docker-compose.prod.yml exec app php artisan make:filament-use
 ```
 
 ### 5. Configure Nginx Proxy Manager
-- Domain: `rdmdev.co.za` (and `www.rdmdev.co.za`)
+- Domain: `rdmdev.co.za`
 - Forward hostname: `rdmdev-app`
 - Forward port: `80`
 - Enable Block Common Exploits
 - SSL: request Let's Encrypt, enable "Force SSL" and HTTP/2
+- Add a second proxy host for `www.rdmdev.co.za` that 301-redirects to `https://rdmdev.co.za` and keeps the path and query string. If www is forwarded to the app instead, the container nginx config and `RedirectWwwToApex` both 301 it to `https://rdmdev.co.za`.
 
 ### 6. Point DNS
 - `A` record `rdmdev.co.za` → `41.72.157.26`

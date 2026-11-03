@@ -47,7 +47,15 @@
 @if ($hero)
 <section class="bg-ink-800 pb-10 -mt-4">
     <div class="container">
-        <img src="{{ $hero }}" alt="{{ $project->displayHeading() }}" class="w-full aspect-video object-cover rounded-xl shadow-card" loading="eager" fetchpriority="high" decoding="async">
+        <x-responsive-image
+            :image="$project->featuredPicture()"
+            sizes="(min-width: 1024px) 1100px, 100vw"
+            :alt="$project->displayHeading()"
+            class="w-full aspect-video object-cover rounded-xl shadow-card"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+        />
     </div>
 </section>
 @endif
@@ -84,6 +92,14 @@
                         <dt class="col-span-1 text-ink-500">Completed</dt>
                         <dd class="col-span-2 font-semibold">{{ $project->completed_on->format('M Y') }}</dd>
                     @endif
+                    @if ($project->services->isNotEmpty())
+                        <dt class="col-span-1 text-ink-500">Services</dt>
+                        <dd class="col-span-2 font-semibold">
+                            @foreach ($project->services as $linked)
+                                <a href="{{ route('services.show', $linked) }}" class="text-brand-700 hover:text-brand-800">{{ $linked->cardTitle() }}</a>@if (! $loop->last), @endif
+                            @endforeach
+                        </dd>
+                    @endif
                 </dl>
             </div>
 
@@ -110,10 +126,10 @@
         <div class="mt-10 grid gap-8 sm:grid-cols-2">
             @for ($i = 0; $i < $pairCount; $i++)
                 <x-before-after
-                    :before="$before[$i]->url()"
-                    :after="$after[$i]->url()"
-                    :beforeAlt="$before[$i]->alt ?: 'Before — '.$project->title"
-                    :afterAlt="$after[$i]->alt ?: 'After — '.$project->title" />
+                    :before="$before[$i]"
+                    :after="$after[$i]"
+                    :before-alt="$before[$i]->alt ?: 'Before, '.$project->title"
+                    :after-alt="$after[$i]->alt ?: 'After, '.$project->title" />
             @endfor
         </div>
     </div>
@@ -133,7 +149,7 @@
                 <h3 class="!text-xl mb-4">More before</h3>
                 <div class="grid grid-cols-2 gap-3">
                     @foreach ($extraBefore as $img)
-                        <img src="{{ $img->url() }}" alt="{{ $img->alt ?: 'Before — '.$project->title }}" loading="lazy" class="aspect-square object-cover rounded-lg">
+                        <x-responsive-image :image="$img->picture()" sizes="(min-width: 1024px) 25vw, 50vw" :alt="$img->alt ?: 'Before, '.$project->title" loading="lazy" decoding="async" class="aspect-square object-cover rounded-lg" />
                     @endforeach
                 </div>
             </div>
@@ -143,7 +159,7 @@
                 <h3 class="!text-xl mb-4">More after</h3>
                 <div class="grid grid-cols-2 gap-3">
                     @foreach ($extraAfter as $img)
-                        <img src="{{ $img->url() }}" alt="{{ $img->alt ?: 'After — '.$project->title }}" loading="lazy" class="aspect-square object-cover rounded-lg">
+                        <x-responsive-image :image="$img->picture()" sizes="(min-width: 1024px) 25vw, 50vw" :alt="$img->alt ?: 'After, '.$project->title" loading="lazy" decoding="async" class="aspect-square object-cover rounded-lg" />
                     @endforeach
                 </div>
             </div>
@@ -162,7 +178,7 @@
         <div class="mt-8 grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             @foreach ($gallery as $img)
                 <a href="{{ $img->url() }}" target="_blank" rel="noopener" class="block overflow-hidden rounded-lg bg-ink-100">
-                    <img src="{{ $img->url() }}" alt="{{ $img->alt ?: $project->title }}" loading="lazy" class="aspect-square object-cover w-full hover:scale-[1.03] transition">
+                    <x-responsive-image :image="$img->picture()" sizes="(min-width: 1024px) 25vw, 50vw" :alt="$img->alt ?: $project->title" loading="lazy" decoding="async" class="aspect-square object-cover w-full hover:scale-[1.03] transition" />
                 </a>
             @endforeach
         </div>

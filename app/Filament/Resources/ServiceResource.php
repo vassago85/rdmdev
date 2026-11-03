@@ -96,7 +96,9 @@ class ServiceResource extends Resource
                     Forms\Components\Textarea::make('meta_description')
                         ->rows(2)
                         ->maxLength(160)
-                        ->helperText('Recommended 140–160 characters. Hashtags are stripped on output.'),
+                        ->live()
+                        ->hint(fn (?string $state): string => mb_strlen((string) $state).' / 160')
+                        ->helperText('Search snippet when set. Leave blank to use the page text, cut at a word under 155 characters.'),
                 ]),
 
             Forms\Components\Section::make('FAQ (optional)')
@@ -122,6 +124,12 @@ class ServiceResource extends Resource
 
             Forms\Components\Section::make('Settings')
                 ->schema([
+                    Forms\Components\Select::make('projects')
+                        ->relationship('projects', 'title')
+                        ->multiple()
+                        ->preload()
+                        ->searchable()
+                        ->helperText('Published projects linked here are shown on this service page.'),
                     Forms\Components\TextInput::make('sort_order')
                         ->numeric()
                         ->default(0),

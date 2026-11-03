@@ -129,6 +129,7 @@ php artisan route:cache
 php artisan view:cache
 
 php artisan storage:link 2>/dev/null || true
+php artisan images:variants || true
 
 chown -R www-data:www-data /var/www/html/storage
 chmod -R 775 /var/www/html/storage

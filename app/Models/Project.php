@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use App\Support\MetaDescription;
+use App\Support\ResponsiveImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
@@ -40,6 +43,16 @@ class Project extends Model
     public function images(): HasMany
     {
         return $this->hasMany(ProjectImage::class)->orderBy('sort_order')->orderBy('id');
+    }
+
+    public function services(): BelongsToMany
+    {
+        return $this->belongsToMany(Service::class);
+    }
+
+    public function publishedServices(): BelongsToMany
+    {
+        return $this->services()->published()->ordered();
     }
 
     public function beforeImages(): HasMany
@@ -133,14 +146,34 @@ class Project extends Model
     }
 
     /**
-     * Human H1: "Complete Bathroom Renovation — Garsfontein, Pretoria East".
+     * Human H1. The suburb is not repeated when the title already contains it.
+     * "Wingate Park Home Renovation" in Wingate Park becomes
+     * "Wingate Park Home Renovation, Pretoria East".
      */
     public function displayHeading(): string
     {
         $base = $this->baseTitle();
-        $place = $this->locationLabel();
+        $suburb = $this->suburbName();
+        $hasSuburb = $suburb !== '' && mb_stripos($base, $suburb) !== false;
+        $hasRegion = mb_stripos($base, 'Pretoria East') !== false;
 
-        return $place ? $base . ' — ' . $place : $base . ' — Pretoria East';
+        if ($hasRegion) {
+            return $base;
+        }
+
+        if ($hasSuburb || $suburb === '' || strcasecmp($suburb, 'Pretoria East') === 0) {
+            return $base.', Pretoria East';
+        }
+
+        return $base.', '.$suburb.', Pretoria East';
+    }
+
+    public function suburbName(): string
+    {
+        $location = trim((string) $this->location);
+        $location = preg_replace('/,?\s*Pretoria\s+East\s*$/i', '', $location) ?? $location;
+
+        return trim($location, " \t,");
     }
 
     /**
@@ -173,24 +206,42 @@ class Project extends Model
 
     public function metaDescription(): string
     {
-        $raw = $this->meta_description
-            ?: strip_tags($this->description ?: '');
-
-        return $this->sanitizeMetaDescription($raw);
+        return MetaDescription::from($this->meta_description, $this->description);
     }
 
-    /**
-     * Strip hashtags and hard-cap at ~155 characters for SERP snippets.
-     */
-    public function sanitizeMetaDescription(string $text): string
+    public function coverStoragePath(): ?string
     {
-        $text = html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        // Remove #hashtags (and common trailing social tags).
-        $text = preg_replace('/#\S+/u', '', $text) ?? $text;
-        $text = preg_replace('/\s{2,}/u', ' ', $text) ?? $text;
-        $text = trim($text);
+        if ($this->cover_image) {
+            return $this->cover_image;
+        }
 
-        return Str::limit($text, 155, '…');
+        if ($after = $this->firstImageOfType('after')) {
+            return $after->path;
+        }
+
+        if ($this->featured_image) {
+            return $this->featured_image;
+        }
+
+        if ($this->relationLoaded('images')) {
+            return $this->images->first()?->path;
+        }
+
+        return $this->images()->first()?->path;
+    }
+
+    /** @return array{src: string, srcset: ?string, width: int, height: int, original_width: int, below_1200: bool} */
+    public function coverPicture(): array
+    {
+        return ResponsiveImage::fromStoragePath($this->coverStoragePath());
+    }
+
+    /** @return array{src: string, srcset: ?string, width: int, height: int, original_width: int, below_1200: bool} */
+    public function featuredPicture(): array
+    {
+        $path = $this->featured_image ?: $this->coverStoragePath();
+
+        return ResponsiveImage::fromStoragePath($path);
     }
 
     protected function seoTitleClean(string $title): string

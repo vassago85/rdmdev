@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RedirectWwwToApex;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -24,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // the X-Forwarded-Proto header and generates https:// asset URLs when
         // the public request is https. Without this, mixed-content breakage.
         $middleware->trustProxies(at: '*');
+        $middleware->prepend(RedirectWwwToApex::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -29,6 +29,7 @@ class ServiceController extends Controller
         abort_unless($service->is_published, 404);
 
         $others = Service::published()->ordered()->where('id', '!=', $service->id)->take(4)->get();
+        $projects = $service->publishedProjects()->with('images')->get();
 
         $schemaExtra = [
             JsonLd::service($service),
@@ -43,6 +44,7 @@ class ServiceController extends Controller
         return view('services.show', [
             'service'         => $service,
             'others'          => $others,
+            'projects'        => $projects,
             'pageTitle'       => $service->seoTitle(),
             'metaDescription' => $service->metaDescription(),
             'schemaExtra'     => $schemaExtra,

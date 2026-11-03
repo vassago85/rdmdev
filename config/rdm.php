@@ -76,7 +76,7 @@ return [
 
     'suburbs' => [
         'Garsfontein', 'Faerie Glen', 'Moreleta Park', 'Woodhill', 'Silver Lakes',
-        'Olympus', 'Wapadrand', 'Elarduspark', 'Lynnwood', 'Menlo Park',
+        'Olympus', 'Wapadrand', 'Elarduspark', 'Lynnwood', 'Menlo Park', 'Wingate Park',
     ],
 
     /*

@@ -19,11 +19,10 @@ class JsonLd
 {
     public static function business(): array
     {
-        $sameAs = array_values(array_filter([
-            config('rdm.social.google_business'),
-            config('rdm.social.facebook'),
-            config('rdm.social.instagram'),
-        ]));
+        $sameAs = array_values(array_filter(
+            config('seo.same_as', []),
+            fn ($url) => is_string($url) && str_starts_with($url, 'http')
+        ));
 
         $hours = collect(config('rdm.opening_hours', []))->map(fn (array $slot) => [
             '@type'     => 'OpeningHoursSpecification',
@@ -38,15 +37,19 @@ class JsonLd
             'name'        => config('rdm.name'),
             'legalName'   => config('rdm.legal_name'),
             'image'       => asset('images/rdmdev-logo-960.png'),
+            'logo'        => [
+                '@type'  => 'ImageObject',
+                'url'    => asset('images/rdmdev-logo-960.png'),
+            ],
             'url'         => rtrim(config('app.url'), '/') . '/',
             'telephone'   => config('rdm.phone_tel'),
             'email'       => config('rdm.email'),
             'priceRange'  => config('rdm.price_range'),
             'founder'     => config('rdm.owner'),
-            'areaServed'  => [
+            'areaServed'  => collect(config('rdm.suburbs', []))->map(fn (string $suburb) => [
                 '@type' => 'Place',
-                'name'  => 'Pretoria East, Gauteng, South Africa',
-            ],
+                'name'  => $suburb.', Pretoria East, Gauteng',
+            ])->values()->all(),
             'address' => [
                 '@type'           => 'PostalAddress',
                 'addressLocality' => 'Pretoria East',
@@ -74,6 +77,11 @@ class JsonLd
 
         if (! empty($sameAs)) {
             $entity['sameAs'] = $sameAs;
+        }
+
+        $map = config('seo.has_map');
+        if (is_string($map) && str_starts_with($map, 'http')) {
+            $entity['hasMap'] = $map;
         }
 
         // AggregateRating — emitted only when real Google numbers are configured.
