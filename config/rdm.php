@@ -9,8 +9,16 @@ return [
 
     'legal_name'            => 'RDM Developments (Pty) Ltd',
     'registration_number'  => '2025/525638/07',
-    // TODO: supply NHBRC home-builder registration number when available.
+    // Certificate expired at the end of August 2026. Ruben renews in January 2027,
+    // when it is valid for a year again. Leave empty until the new certificate
+    // is in hand. The site does not claim NHBRC registration while this is empty.
     'nhbrc_number'          => env('RDM_NHBRC_NUMBER'),
+
+    // Working for himself since February 2016. This becomes 11 years in February 2027.
+    'years_in_business'     => '10 years working for himself',
+
+    // No exact tally. Ruben confirmed it is over 1 000.
+    'completed_projects'    => '1 000+',
 
     'phone'       => env('RDM_PHONE', '072 972 9393'),
     'phone_tel'   => env('RDM_PHONE_TEL', '+27729729393'),
@@ -40,10 +48,9 @@ return [
     |
     */
     'google' => [
-        'rating'       => env('RDM_GOOGLE_RATING'),        // e.g. 4.9  (TODO: real value)
-        'review_count' => env('RDM_GOOGLE_REVIEW_COUNT'),  // e.g. 30   (TODO: real value)
-        // Direct "write a review" / profile link. Falls back to social.google_business.
-        'reviews_url'  => env('RDM_GOOGLE_REVIEWS_URL'),
+        'rating'       => env('RDM_GOOGLE_RATING'),        // Leave empty until there is a real Google rating. The trust strip stays hidden.
+        'review_count' => env('RDM_GOOGLE_REVIEW_COUNT'),
+        'reviews_url'  => env('RDM_GOOGLE_REVIEWS_URL'),   // Leave empty until there is a Google reviews page. The link stays hidden.
     ],
 
     // LocalBusiness geo — Pretoria East centroid placeholders. Replace with

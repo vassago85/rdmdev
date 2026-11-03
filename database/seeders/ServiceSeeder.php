@@ -15,6 +15,7 @@ class ServiceSeeder extends Seeder
                 'slug'             => 'building-pretoria-east',
                 'tagline'          => 'Masonry, additions, alterations and general construction.',
                 'icon'             => 'hammer',
+                'short_description' => 'Masonry, additions and alterations, supervised by Ruben from quote to hand-over.',
                 'excerpt'          => 'Building work across Pretoria East — masonry, additions, alterations, ceilings and general construction. Personally supervised by Ruben Metcalfe from quote to hand-over.',
                 'description'      => <<<'HTML'
 <p>RDM Developments handles building work across Pretoria East — from Garsfontein and Faerie Glen to Moreleta Park, Woodhill and Silver Lakes. Every job is personally supervised by the owner, Ruben Metcalfe, so quotes stay honest, timelines stay realistic, and the finish matches what you agreed to.</p>
@@ -39,6 +40,7 @@ HTML,
                 'slug'             => 'bathroom-renovations-pretoria-east',
                 'tagline'          => 'Complete bathroom renovations, including the plumbing.',
                 'icon'             => 'bath',
+                'short_description' => 'Plumbing, tiling, showers and finishes, quoted and supervised by Ruben.',
                 'excerpt'          => 'Full-scope bathroom renovations in Pretoria East — including plumbing, waterproofing, tiling, vanities, showers and finishes. Honest quotes, clean finishes, personally supervised by Ruben.',
                 'description'      => <<<'HTML'
 <p>RDM Developments handles complete bathroom renovations across Pretoria East — from Garsfontein and Faerie Glen to Moreleta Park, Woodhill and Silver Lakes. Every job is personally supervised by the owner, Ruben Metcalfe, so quotes stay honest, timelines stay realistic, and the finish matches what you agreed to.</p>
@@ -64,6 +66,7 @@ HTML,
                 'slug'             => 'tiling-pretoria-east',
                 'tagline'          => 'Wall and floor tiling, done properly.',
                 'icon'             => 'grid',
+                'short_description' => 'Wall and floor tiling for bathrooms, living areas and outdoor spaces.',
                 'excerpt'          => 'Professional wall and floor tiling in Pretoria East — bathrooms, living areas and outdoor spaces. Proper prep, clean lines and a tidy site.',
                 'description'      => <<<'HTML'
 <p>RDM Developments provides wall and floor tiling across Pretoria East. Whether it's a bathroom, living area or outdoor space, we prepare the substrate properly so the finish lasts — not just looks good on day one.</p>
@@ -87,6 +90,7 @@ HTML,
                 'slug'             => 'waterproofing-pretoria-east',
                 'tagline'          => 'Roof, wall and wet-area waterproofing that lasts.',
                 'icon'             => 'droplet',
+                'short_description' => 'Roof, wall and wet-area waterproofing, with the prep done first.',
                 'excerpt'          => 'Roof, wall and wet-area waterproofing in Pretoria East. Proper prep, quality products and work personally supervised by Ruben Metcalfe.',
                 'description'      => <<<'HTML'
 <p>Waterproofing is only as good as the preparation behind it. RDM Developments takes the proper-prep approach — cleaning, crack repair and quality products — so the waterproofing on your Pretoria East home lasts for years rather than a season or two.</p>
@@ -109,6 +113,7 @@ HTML,
                 'slug'             => 'painting-pretoria-east',
                 'tagline'          => 'Interior and exterior painting, properly prepared.',
                 'icon'             => 'paintbrush',
+                'short_description' => 'Interior and exterior painting, properly prepared, on a tidy site.',
                 'excerpt'          => 'Interior and exterior painting in Pretoria East. Proper prep, quality products and a clean, tidy site from start to finish.',
                 'description'      => <<<'HTML'
 <p>Paint is only ever as good as the preparation behind it. RDM Developments takes the proper-prep approach — cleaning, crack repair, priming and quality products — so the paint on your Pretoria East home lasts for years rather than a season or two.</p>

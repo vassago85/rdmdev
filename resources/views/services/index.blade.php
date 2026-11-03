@@ -25,8 +25,7 @@
     </div>
 
     <p class="container mt-10 max-w-2xl text-sm text-ink-500 leading-relaxed">
-        We do not offer electrical work. Where a project requires it, the client
-        appoints their own registered electrician.
+        Electrical work is done by your own registered electrician. We coordinate with them on site.
     </p>
 </section>
 

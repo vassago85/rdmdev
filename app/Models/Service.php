@@ -43,6 +43,20 @@ class Service extends Model
         return $query->orderBy('sort_order')->orderBy('title');
     }
 
+    /**
+     * Homepage and listing card title, without the location suffix
+     * kept on the service page H1, title and meta description.
+     */
+    public function cardTitle(): string
+    {
+        $title = trim((string) preg_replace('/\s+Pretoria East\s*$/iu', '', (string) $this->title));
+
+        return match (mb_strtolower($title)) {
+            'bathroom renovations' => 'Bathroom renovations',
+            default => $title,
+        };
+    }
+
     public function seoTitle(): string
     {
         return $this->seo_title ?: $this->title . ' | RDM Developments';

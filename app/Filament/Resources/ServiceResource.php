@@ -60,10 +60,15 @@ class ServiceResource extends Resource
                         ->native(false)
                         ->placeholder('Choose an icon')
                         ->helperText('Shown on the service card. Pick from the supported set to avoid broken icons.'),
+                    Forms\Components\Textarea::make('short_description')
+                        ->label('Short description')
+                        ->rows(2)
+                        ->maxLength(120)
+                        ->helperText('One complete line on the service card, about 100 characters. Shown in full, not cut off.'),
                     Forms\Components\Textarea::make('excerpt')
                         ->rows(3)
                         ->maxLength(500)
-                        ->helperText('Summary used on service cards.'),
+                        ->helperText('Longer summary used as a fallback for the meta description.'),
                     Forms\Components\RichEditor::make('description')
                         ->toolbarButtons([
                             'bold', 'italic', 'link', 'bulletList', 'orderedList',

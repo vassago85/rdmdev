@@ -7,6 +7,7 @@
     $gRating = config('rdm.google.rating');
     $gCount  = config('rdm.google.review_count');
     $gUrl    = config('rdm.google.reviews_url') ?: config('rdm.social.google_business');
+    $gUrl    = is_string($gUrl) && str_starts_with($gUrl, 'http') ? $gUrl : null;
     $hasGoogle = filled($gRating) && filled($gCount);
 
     $ratingValue = $hasGoogle ? (float) $gRating : 0;

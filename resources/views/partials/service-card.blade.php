@@ -10,17 +10,17 @@
     </div>
 
     @if ($headingTag === 'h2')
-        <h2 class="!text-xl group-hover:text-brand-600 transition">{{ $service->title }}</h2>
+        <h2 class="!text-xl group-hover:text-brand-600 transition">{{ $service->cardTitle() }}</h2>
     @else
-        <h3 class="!text-xl group-hover:text-brand-600 transition">{{ $service->title }}</h3>
+        <h3 class="!text-xl group-hover:text-brand-600 transition">{{ $service->cardTitle() }}</h3>
     @endif
 
     @if ($service->tagline)
         <p class="mt-1 text-sm font-semibold text-brand-600">{{ $service->tagline }}</p>
     @endif
 
-    @if ($service->excerpt)
-        <p class="mt-3 text-ink-500 text-[15px] leading-relaxed">{{ \Illuminate\Support\Str::limit($service->excerpt, 155) }}</p>
+    @if ($service->short_description)
+        <p class="mt-3 text-ink-500 text-[15px] leading-relaxed">{{ $service->short_description }}</p>
     @endif
 
     <p class="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 group-hover:gap-2.5 transition-all">

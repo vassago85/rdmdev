@@ -29,8 +29,22 @@
                             </svg>
                         @endfor
                     </div>
-                    <blockquote class="mt-4 flex-1 text-ink-700 leading-relaxed text-[15px]">
-                        “{{ $item['quote'] }}”
+                    @php
+                        $quote = trim((string) $item['quote']);
+                        $sentences = preg_split('/(?<=[.!?])\s+/u', $quote, -1, PREG_SPLIT_NO_EMPTY) ?: [$quote];
+                        $canExpand = ($expandable ?? false) && count($sentences) > 2;
+                        $preview = $canExpand ? $sentences[0] . ' ' . $sentences[1] : $quote;
+                    @endphp
+                    <blockquote class="mt-4 flex-1 text-ink-700 leading-relaxed text-[15px]" @if ($canExpand) x-data="{ open: false }" @endif>
+                        @if ($canExpand)
+                            “<span x-show="!open">{{ $preview }}</span><span x-show="open" x-cloak>{{ $quote }}</span>”
+                            <button type="button" class="mt-3 block text-sm font-semibold text-brand-600 hover:text-brand-700" @click="open = !open">
+                                <span x-show="!open">Read more</span>
+                                <span x-show="open" x-cloak>Read less</span>
+                            </button>
+                        @else
+                            “{{ $quote }}”
+                        @endif
                     </blockquote>
                     <figcaption class="mt-5 pt-4 border-t border-ink-100">
                         <p class="font-semibold text-ink-800">{{ $item['name'] }}</p>
@@ -41,6 +55,18 @@
                 </figure>
             @endforeach
         </div>
+
+        @php
+            $reviewsUrl = config('rdm.google.reviews_url') ?: config('rdm.social.google_business');
+        @endphp
+        @if (is_string($reviewsUrl) && str_starts_with($reviewsUrl, 'http'))
+            <p class="mt-10 text-center">
+                <a href="{{ $reviewsUrl }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 font-semibold text-brand-700 hover:text-brand-800">
+                    See our Google reviews
+                    <x-lucide name="arrow-right" class="h-4 w-4" />
+                </a>
+            </p>
+        @endif
     </div>
 </section>
 @endif

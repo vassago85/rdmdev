@@ -4,7 +4,7 @@
             <x-rdm-logo variant="light" class="h-12 w-auto mb-4" />
             <p class="text-ink-200 max-w-md">
                 {{ config('rdm.name') }} is a small, owner-managed construction and renovation business based in Pretoria East.
-                Every project is personally supervised by {{ config('rdm.owner') }}.
+                Every project is personally supervised by Ruben.
             </p>
             <div class="mt-5 flex flex-wrap gap-3">
                 <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-md bg-white/10 text-white hover:bg-white/20">
@@ -35,16 +35,14 @@
                 <li><a class="hover:text-white" href="{{ route('contact') }}">Contact</a></li>
                 <li class="flex items-center gap-2"><x-lucide name="mail" class="h-4 w-4 text-brand-300" /> <a class="hover:text-white" href="mailto:{{ config('rdm.email') }}">{{ config('rdm.email') }}</a></li>
                 <li class="flex items-center gap-2 text-ink-300"><x-lucide name="map-pin" class="h-4 w-4 text-brand-300" /> {{ config('rdm.location') }}</li>
+                <li class="pt-2 text-ink-300 leading-relaxed">{{ implode(' · ', config('rdm.suburbs')) }}</li>
             </ul>
             <div class="mt-5 space-y-1 text-sm text-ink-200 leading-relaxed">
                 <p>{{ config('rdm.legal_name') }}</p>
                 <p>Registration number {{ config('rdm.registration_number') }}</p>
-                <p>
-                    Registered with the NHBRC as a home builder
-                    @if (config('rdm.nhbrc_number'))
-                        ({{ config('rdm.nhbrc_number') }})
-                    @endif
-                </p>
+                @if (filled(config('rdm.nhbrc_number')))
+                    <p>Registered with the NHBRC as a home builder. NHBRC reg. no. {{ config('rdm.nhbrc_number') }}</p>
+                @endif
             </div>
         </div>
     </div>

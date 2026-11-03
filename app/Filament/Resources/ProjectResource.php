@@ -65,13 +65,21 @@ class ProjectResource extends Resource
 
             Forms\Components\Section::make('Featured Image')
                 ->schema([
+                    Forms\Components\FileUpload::make('cover_image')
+                        ->label('Card cover')
+                        ->image()
+                        ->disk('public')
+                        ->directory('projects')
+                        ->imageEditor()
+                        ->imagePreviewHeight('220')
+                        ->helperText('Thumbnail on project cards. Leave blank to use the after photo.'),
                     Forms\Components\FileUpload::make('featured_image')
                         ->image()
                         ->disk('public')
                         ->directory('projects')
                         ->imageEditor()
                         ->imagePreviewHeight('220')
-                        ->helperText('Shown on the projects grid and featured sections. Upload before/after gallery images in the “Images” tab after saving.'),
+                        ->helperText('Large photo at the top of the project page. Upload before/after gallery images in the Images tab after saving.'),
                 ]),
 
             Forms\Components\Section::make('SEO')

@@ -95,6 +95,23 @@ class Project extends Model
     }
 
     /**
+     * Card thumbnail. Prefers an explicit cover, then the after photo,
+     * then the featured image used on the project page.
+     */
+    public function coverImageUrl(): ?string
+    {
+        if ($this->cover_image) {
+            return asset('storage/' . $this->cover_image);
+        }
+
+        if ($after = $this->firstImageOfType('after')) {
+            return $after->url();
+        }
+
+        return $this->featuredImageUrl();
+    }
+
+    /**
      * Title with trailing location phrases stripped, so H1/meta can append
      * the suburb once without "in Pretoria East in Pretoria East".
      */

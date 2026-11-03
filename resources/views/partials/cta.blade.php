@@ -1,6 +1,6 @@
 @php
     $heading = $heading ?? 'Ready to start your project?';
-    $subtext = $subtext ?? 'Speak directly to ' . config('rdm.owner') . ' — honest advice, a clear quote, and a finish you can be proud of.';
+    $subtext = $subtext ?? 'Speak directly to Ruben. Honest advice, a clear quote, and a finish you can be proud of.';
 @endphp
 <section class="bg-brand-600 text-white">
     <div class="container py-14 lg:py-16 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">

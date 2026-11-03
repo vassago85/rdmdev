@@ -117,15 +117,14 @@
                         <p class="text-xs uppercase text-ink-400 tracking-wide">Registration number</p>
                         <p class="font-semibold">{{ config('rdm.registration_number') }}</p>
                     </li>
-                    <li>
-                        <p class="text-xs uppercase text-ink-400 tracking-wide">NHBRC</p>
-                        <p class="font-semibold">
-                            Registered with the NHBRC as a home builder
-                            @if (config('rdm.nhbrc_number'))
-                                <span class="block text-ink-500 font-normal mt-1">{{ config('rdm.nhbrc_number') }}</span>
-                            @endif
-                        </p>
-                    </li>
+                    @if (filled(config('rdm.nhbrc_number')))
+                        <li>
+                            <p class="text-xs uppercase text-ink-400 tracking-wide">NHBRC</p>
+                            <p class="font-semibold">
+                                Registered with the NHBRC as a home builder. NHBRC reg. no. {{ config('rdm.nhbrc_number') }}
+                            </p>
+                        </li>
+                    @endif
                 </ul>
             </div>
 

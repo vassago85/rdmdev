@@ -4,7 +4,8 @@
 
 @php
     $heroUrl = $about->homeHeroImageUrl();
-    $featuredCount = $featuredProjects->count();
+    $featuredShown = $featuredProjects->take(6);
+    $featuredCount = $featuredShown->count();
 @endphp
 
 {{-- HERO --}}
@@ -32,7 +33,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-ink-900/50 via-transparent to-ink-900/30"></div>
     </div>
 
-    <div class="container relative grid gap-8 lg:gap-10 py-12 sm:py-14 lg:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center">
+    <div class="container relative grid gap-8 lg:gap-10 py-8 sm:py-14 lg:py-16 lg:grid-cols-[1.35fr_1fr] lg:items-center">
         <div>
             @if ($about->home_eyebrow)
                 <p class="eyebrow !text-brand-200">{{ $about->home_eyebrow }}</p>
@@ -43,23 +44,19 @@
             @endif
 
             <div class="mt-6 flex flex-wrap gap-3">
-                <a href="tel:{{ config('rdm.phone_tel') }}" class="btn btn-lg bg-white text-brand-700 hover:bg-brand-50">
-                    <x-lucide name="phone" class="h-5 w-5" stroke="2" />
-                    Call Ruben
-                </a>
                 <x-whatsapp-link placement="hero" class="btn-whatsapp">
                     <x-lucide name="message-circle" class="h-5 w-5" stroke="2" />
                     WhatsApp
                 </x-whatsapp-link>
                 <a href="{{ route('contact') }}#enquiry" class="btn-outline">
                     <x-lucide name="file-text" class="h-5 w-5" stroke="2" />
-                    Request a Quote
+                    Request a quote
                 </a>
             </div>
         </div>
 
-        {{-- OWNER / TRUST CARD — kept for credibility, now over the photo --}}
-        <div class="lg:pl-4">
+        {{-- Owner card sits beside the headline from md up. Hidden under 768px so the headline and both buttons fit without scrolling. --}}
+        <div class="hidden md:block lg:pl-4">
             <div class="bg-ink-900/55 backdrop-blur-md border border-white/15 rounded-2xl p-5 sm:p-6 shadow-2xl">
                 <div class="flex items-center gap-3 mb-4">
                     <img src="{{ $leadMember?->photoUrl(asset('images/ruben-metcalfe.jpg')) ?? asset('images/ruben-metcalfe.jpg') }}"
@@ -82,7 +79,9 @@
                         @foreach ($about->homeOwnerBullets() as $bullet)
                             <li class="flex items-center gap-2">
                                 <x-lucide name="check-circle-2" class="h-4 w-4 text-brand-300" />
-                                {{ $bullet }}
+                                <span>
+                                    {{ $bullet }}@if (str_contains($bullet, 'NHBRC') && filled(config('rdm.nhbrc_number'))). NHBRC reg. no. {{ config('rdm.nhbrc_number') }}@endif
+                                </span>
                             </li>
                         @endforeach
                     </ul>
@@ -131,7 +130,7 @@
             'sm:grid-cols-2 max-w-4xl mx-auto' => $featuredCount === 2,
             'sm:grid-cols-2 lg:grid-cols-3' => $featuredCount >= 3,
         ])>
-            @foreach ($featuredProjects->take(3) as $project)
+            @foreach ($featuredShown as $project)
                 @include('partials.project-card', ['project' => $project])
             @endforeach
         </div>
@@ -162,6 +161,18 @@
             @foreach ($services as $service)
                 @include('partials.service-card', ['service' => $service])
             @endforeach
+
+            <div class="card border-t-4 border-t-brand-500 p-6 sm:p-7 flex flex-col">
+                <div class="inline-flex items-center justify-center h-12 w-12 rounded-lg bg-brand-50 text-brand-600 mb-5">
+                    <x-lucide name="message-circle" class="h-6 w-6" />
+                </div>
+                <h3 class="!text-xl">Not sure what you need?</h3>
+                <p class="mt-3 text-ink-500 text-[15px] leading-relaxed">Send Ruben a photo on WhatsApp and he'll tell you what the job involves.</p>
+                <x-whatsapp-link placement="home-services" class="btn btn-md bg-[#25D366] text-white hover:bg-[#1fb957] mt-5 self-start">
+                    <x-lucide name="message-circle" class="h-4 w-4" />
+                    WhatsApp
+                </x-whatsapp-link>
+            </div>
         </div>
 
         @if ($about->services_disclaimer)
@@ -197,7 +208,7 @@
     </div>
 </section>
 
-@include('partials.testimonials')
+@include('partials.testimonials', ['expandable' => true])
 
 {{-- AREAS WE SERVE --}}
 <section class="section bg-ink-50/60 border-y border-ink-100">
@@ -265,7 +276,7 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/25 to-transparent"></div>
                 <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8 text-white">
                     <p class="text-4xl sm:text-5xl font-display font-bold tracking-tight">Pretoria East</p>
-                    <p class="mt-2 text-sm text-brand-100">Garsfontein · Faerie Glen · Moreleta Park · Woodhill · Silver Lakes · Olympus</p>
+                    <p class="mt-2 text-sm text-brand-100">{{ implode(' · ', config('rdm.suburbs')) }}</p>
                 </div>
             </div>
         </div>

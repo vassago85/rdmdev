@@ -3,8 +3,9 @@
         class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-ink-100 transition-shadow"
         :class="scrolled ? 'shadow-card' : ''">
     <div class="container flex items-center justify-between h-20">
-        <a href="{{ route('home') }}" class="flex items-center gap-3" aria-label="RDM Developments — home">
-            <x-rdm-logo class="h-12 w-auto" />
+        <a href="{{ route('home') }}" class="flex items-center" aria-label="RDM Developments home">
+            {{-- Wordmark only. The full logo's tagline is too small to read in the header. --}}
+            <x-rdm-logo wordmark class="h-14 w-auto sm:h-16" />
         </a>
 
         <nav class="hidden lg:flex items-center gap-8" aria-label="Primary">

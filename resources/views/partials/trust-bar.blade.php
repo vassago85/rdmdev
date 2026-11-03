@@ -1,40 +1,36 @@
-{{-- Visible credentials strip — complements the faint footer legal text. --}}
+{{-- Proof points under the hero. Empty or TODO values are left off the page. --}}
+@php
+    $stats = [];
+    $years = config('rdm.years_in_business');
+    $projects = config('rdm.completed_projects');
+    $rating = config('rdm.google.rating');
+
+    if (filled($years) && $years !== 'TODO') {
+        $stats[] = ['icon' => 'calendar-check', 'text' => $years];
+    }
+    if (filled($projects) && $projects !== 'TODO') {
+        $stats[] = ['icon' => 'hammer', 'text' => $projects . ' completed projects'];
+    }
+    if (is_numeric($rating) && (float) $rating > 0) {
+        $stats[] = ['icon' => 'star', 'text' => 'Google rating ' . $rating];
+    }
+@endphp
+@if ($stats !== [])
 <section class="border-y border-ink-100 bg-white">
     <div class="container py-4 sm:py-5">
         <ul class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-semibold text-ink-700">
-            @if (filled(config('rdm.google.rating')) && filled(config('rdm.google.review_count')))
-                <li class="inline-flex items-center">
-                    @include('partials.google-rating')
+            @foreach ($stats as $stat)
+                @if (! $loop->first)
+                    <li class="hidden sm:block h-4 w-px bg-ink-200" aria-hidden="true"></li>
+                @endif
+                <li class="inline-flex items-center gap-2">
+                    <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                        <x-lucide :name="$stat['icon']" class="h-4 w-4" />
+                    </span>
+                    <span>{{ $stat['text'] }}</span>
                 </li>
-                <li class="hidden sm:block h-4 w-px bg-ink-200" aria-hidden="true"></li>
-            @endif
-            <li class="inline-flex items-center gap-2">
-                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                    <x-lucide name="shield-check" class="h-4 w-4" />
-                </span>
-                <span>
-                    Owner-managed by {{ config('rdm.owner') }}
-                </span>
-            </li>
-            <li class="hidden sm:block h-4 w-px bg-ink-200" aria-hidden="true"></li>
-            <li class="inline-flex items-center gap-2">
-                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                    <x-lucide name="check-circle-2" class="h-4 w-4" />
-                </span>
-                <span>
-                    Registered with the NHBRC as a home builder
-                    @if (config('rdm.nhbrc_number'))
-                        <span class="font-normal text-ink-500">({{ config('rdm.nhbrc_number') }})</span>
-                    @endif
-                </span>
-            </li>
-            <li class="hidden sm:block h-4 w-px bg-ink-200" aria-hidden="true"></li>
-            <li class="inline-flex items-center gap-2 text-ink-600">
-                <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                    <x-lucide name="map-pin" class="h-4 w-4" />
-                </span>
-                <span>{{ config('rdm.location') }}</span>
-            </li>
+            @endforeach
         </ul>
     </div>
 </section>
+@endif
